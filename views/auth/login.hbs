@@ -1,0 +1,18 @@
+<h3>Log in</h3>
+
+<!-- Log in failure messages-->
+<ul>{{#each messages}}
+    <li>{{this}}</li>
+{{/each}}
+</ul>
+
+
+<form action="/auth/login" method="POST">
+    <label for="username">Username <input type="text" name="username" required></label>
+    <label for="password">Password <input type="password" name="password" required></label>
+    <input type="submit" value="Login">
+</form>
+
+<p>If you don't have an account,
+    <a href="/auth/signup">Sign up here</a>
+</p>

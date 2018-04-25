@@ -1,0 +1,14 @@
+<h3>Sign up for an account</h3>
+
+<!-- Sign up failure messages -->
+<ul>{{#each messages}}
+    <li>{{this}}</li>
+{{/each}}
+</ul>
+
+<form action="/auth/signup" method="POST">
+    <label for="username">Username <input type="text" name="username" required></label>
+    <label for="password">Password <input type="password" name="password" required></label>
+    <label for="email">Email <input type="email" name="email" required></label>
+    <input type="submit" value="Sign up">
+</form>
