@@ -1,4 +1,29 @@
+<h4>Search result for <span style="color: #4f3224">{{toUpper keyword}}</span> on <span style="color: #4f3224">{{toUpper site}}</span></h4>
+{{#if recipes}}
 
-{{#each recipes}}
-    <td><a href="{{this.link}}">{{this.title}} Rating: {{this.rating}}</a></td>
-{{/each}}
+    {{#each recipes}}
+        <p><a href="{{this.link}}">{{this.title}} Rating: {{this.rating}}</a></p>
+    {{/each}}
+
+{{else}}
+    No recipes found
+{{/if}}
+
+{{page}}
+
+{{#if (greaterThan recipes.length 19)}}
+    <form id='external-recipe-search-form' action="/external-recipes" method="POST" class="navigation-buttons">
+        <input type="hidden" name="site" value={{site}}>
+        <input type="hidden" name="keyword" value={{keyword}}>
+        <input type="hidden" name="page" value={{add page 1}}>
+        <input id='search-button' type="submit" value="Next"/>
+    </form>
+{{/if}}
+{{#if (greaterThan page 1)}}
+    <form id='external-recipe-search-form' action="/external-recipes" method="POST" class="navigation-buttons">
+        <input type="hidden" name="site" value={{site}}>
+        <input type="hidden" name="keyword" value={{keyword}}>
+        <input type="hidden" name="page" value={{add page -1}}>
+        <input id='search-button' type="submit" value="Previous"/>
+    </form>
+{{/if}}

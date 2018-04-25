@@ -13,13 +13,16 @@ function isLoggedIn(req, res, next) {
 	}
 }
 
+// user need to get authenticated/logged in
+router.use(isLoggedIn);
+
 /* GET home page. */
-router.get('/', isLoggedIn, function(req, res, next) {
+router.get('/', function(req, res, next) {
     res.render('index', { user: req.user });
 });
 
-// POST home page
-router.post('/', isLoggedIn, function(req, res, next) {
+// POST external-recipes/<site>
+router.post('/external-recipes', function(req, res, next) {
 	let site = req.body.site;
 	let keyword = req.body.keyword;
 	let page = req.body.page;
@@ -37,14 +40,14 @@ router.post('/', isLoggedIn, function(req, res, next) {
 			if (err){
 				res.render('error') // TODO render error page
 			} else {
-				res.render('external_recipes', {recipes: recipes});
+				res.render('external_recipes', {recipes: recipes, site: site, keyword: keyword, user: req.user, page: page});
 			}
 		}, keyword, page);
 	}
 	else {
-		res.render('index')
+		res.redirect('/')
 	}
-
 });
+
 
 module.exports = router;

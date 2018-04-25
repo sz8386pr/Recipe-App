@@ -1,14 +1,6 @@
 var request = require('request');
 
-// var options = {
-//     url: 'https://trackapi.nutritionix.com/v2/natural/nutrients',
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'x-app-id': process.env.X_APP_ID,
-//         'x-app-key': process.env.X_APP_KEY,
-//         'x-remote-user-id': '0'
-//     }
-// };
+
 function get_nutrition(callback, ingredient) {
 
     process.nextTick(function(){
@@ -33,6 +25,9 @@ function get_nutrition(callback, ingredient) {
                 catch (error) {
                     callback(error);
                 }
+            }
+            else {
+                callback(Error('Error fetching data from Nutritionix API'), error);
             }
         });
     });
@@ -77,3 +72,6 @@ get_nutrition(function(err, json){
         console.log(json)
     }
 }, '2 boiled egg');
+
+
+module.exports = get_nutrition;

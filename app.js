@@ -21,16 +21,30 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
+// hbs helpers
+hbs.registerHelper('toUpper', function(str) {   //toUpper will change string to uppercase
+	return str.toUpperCase();
+});
+hbs.registerHelper('greaterThan', function(from, to) {  //greaterThan will compare if from value > to value
+	return parseInt(from) > to
+});
+hbs.registerHelper('add', function(addTo, value) {
+	return parseInt(addTo) + value
+});
 
+
+
+
+
+// app use setup
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
 
-
-
-
+// MongoDB & session connection setup
 var mongo_url = process.env.MONGO_URL;
 
 app.use(session({
@@ -40,21 +54,25 @@ app.use(session({
     store: new MongoDBStore( { uri: mongo_url })
 }));
 
+// passport & flash
 require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 
 mongoose.connect(mongo_url)
-    .then( () => { console.log('Connected to mLab'); })
-    .catch( (err) => { console.log('Error connecting to mLab', err); });
+	.then( () => { console.log('Connected to mLab'); })
+	.catch( (err) => { console.log('Error connecting to mLab', err); });
 
+
+
+// routers
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
+// catch 404 and redirect to custom 404 page
 app.use(function(req, res, next) {
-    next(createError(404));
+	res.status(404);
+    res.render('./error/404_error', {layout: false})    // no layout (mostly for testing the feature)
 });
 
 // error handler
@@ -62,7 +80,7 @@ app.use(function(err, req, res, next) {
 
     //If there is validation error ie: email already in use
     if (err.name === "ValidationError") {
-        res.status(err.status || 500);  // set the error status to 500
+        res.status(err.status || 500);  // set the error status to err.status or 500
 
 	    var err_path = Object.keys(err.errors)[0];  // field that caused validation error
 	    var flash_message = err.errors[err_path].message;   // flash message
@@ -77,10 +95,9 @@ app.use(function(err, req, res, next) {
         res.locals.message = err.message;
         res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-
         // render the error page
         res.status(err.status || 500);
-        res.render('error');
+        res.render('./error/error');
     }
 });
 
