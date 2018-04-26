@@ -49,5 +49,9 @@ router.post('/external-recipes', function(req, res, next) {
 	}
 });
 
+// used for testing during development
+router.get('/test', function(req, res, next) {
+	res.render('modal_test', { user: req.user });
+});
 
 module.exports = router;

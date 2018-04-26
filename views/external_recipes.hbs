@@ -1,8 +1,9 @@
 <h4>Search result for <span style="color: #4f3224">{{toUpper keyword}}</span> on <span style="color: #4f3224">{{toUpper site}}</span></h4>
+
 {{#if recipes}}
 
     {{#each recipes}}
-        <p><a href="{{this.link}}">{{this.title}} Rating: {{this.rating}}</a></p>
+        <p><a href="{{this.link}}" class="external-link">{{this.title}} Rating: {{this.rating}}</a></p>
     {{/each}}
 
 {{else}}
@@ -16,7 +17,7 @@
         <input type="hidden" name="site" value={{site}}>
         <input type="hidden" name="keyword" value={{keyword}}>
         <input type="hidden" name="page" value={{add page 1}}>
-        <input id='search-button' type="submit" value="Next"/>
+        <input id='search-button' type="submit" value="Next">
     </form>
 {{/if}}
 {{#if (greaterThan page 1)}}
@@ -24,6 +25,29 @@
         <input type="hidden" name="site" value={{site}}>
         <input type="hidden" name="keyword" value={{keyword}}>
         <input type="hidden" name="page" value={{add page -1}}>
-        <input id='search-button' type="submit" value="Previous"/>
+        <input id='search-button' type="submit" value="Previous">
     </form>
 {{/if}}
+
+
+<!-- The Modal reference from https://www.w3schools.com/howto/howto_css_modals.asp-->
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="close-button">&times;</span>
+            <h2>Modal Header</h2>
+        </div>
+        <div id="modal-body">
+            11<!--<iframe width="100%" height="500px" frameborder="0" allowtransparency="true" src="https://www.allrecipes.com/recipe/223042/chicken-parmesan/"></iframe>-->
+        </div>
+        <div class="modal-footer">
+            <h3>Modal Footer</h3>
+        </div>
+    </div>
+
+</div>
+
+<link rel='stylesheet' href='/stylesheets/modal.css' />
+<script src="/javascripts/modal.js"></script>
