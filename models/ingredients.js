@@ -24,7 +24,7 @@ var ingredientsSchema = mongoose.Schema({
         [ { unit: String, grams: Number }]
 });
 
-ingredientsSchema.plugin(uniqueValidator, {message: 'is already taken.'});
+ingredientsSchema.plugin(uniqueValidator, {message: '{VALUE} is already listed'});
 
 Ingredient = mongoose.model('Ingredient', ingredientsSchema);
 

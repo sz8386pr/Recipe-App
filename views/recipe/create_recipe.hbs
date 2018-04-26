@@ -1,0 +1,40 @@
+<h2>Create Recipe</h2>
+
+<form action="/create-recipe" method="POST">
+    Title:          <input title="Please enter recipe title." type="text" name="title" maxlength="255" placeholder="Recipe title" required><br>
+    Category:       <input title="Please enter recipe category." type="text" name="category" maxlength="255" placeholder="ie: American/Asian/Italian/Dessert..." required><br>
+    Description:    <input title="Please enter recipe description." type="text" name="description" maxlength="255" placeholder="Recipe description" required><br>
+    Duration:       <input title="Value must be greater than or equal to 0.5." type="number" name="duration_value" min=0.5 max=255 step="0.5" placeholder="Cooking duration" required>
+                    <select name="duration_unit">
+                        <option value="m">Minute</option>
+                        <option value="h">Hour</option>
+                        <option value="d">Day</option>
+                    </select> <br>
+    Serving Size:   <input title="Value must be greater than or equal to 1." type="number" name="serving" min=1 max=255 placeholder="Number of servings" required><br>
+    Ingredients:    <input title="Value must be greater than or equal to 0.1." type="number" name="ingredients_value" step="0.1" min=0.1 max=65535 placeholder="Value" required>
+                    <select name="ingredients_unit">
+                        <option value="tsp">tsp</option>
+                        <option value="tbsp">tbsp</option>
+                        <option value="cup">cup</option>
+                        <option value="whole">whole</option>
+                        <option value="mg">mg</option>
+                        <option value="g">g</option>
+                        <option value="kg">kg</option>
+                        <option value="oz">oz</option>
+                        <option value="lb">lb</option>
+                        <option value="pint">pint</option>
+                        <option value="quart">quart</option>
+                        <option value="gallon">gallon</option>
+                        <option value="ml">ml</option>
+                        <option value="liter">liter</option>
+                    </select>
+                    <input title="Ingredient name." type="text" name="ingredients_name" maxlength="255" placeholder="ie: minced garlic" required>
+                    <button id="add-ingredient">+</button><br>
+                    <span id="additional-ingredient"></span>
+    Directions:     <input title="Please enter recipe direction." type="text" name="directions" maxlength="255" placeholder="ie: Preheat oven to 350F" required>
+                    <button id="add-direction">+</button><br>
+                    <span id="additional-direction"></span>
+    Photo:          TODO<br><br>
+
+    <input type="submit" name="create-recipe" value="Create Recipe"/>
+</form>

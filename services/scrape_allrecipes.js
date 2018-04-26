@@ -35,8 +35,8 @@ let scrape = async (url) =>
                         ingredient = ingredient.split(' ');
                         let value = ingredient.shift();
                         let unit = ingredient.shift();
-                        ingredient = ingredient.join(' ');
-                        ingredients.push({value, unit, ingredient});
+                        let name = ingredient.join(' ');
+                        ingredients.push({value, unit, name});
                     }
                 });
 
@@ -94,7 +94,7 @@ function get_recipe(callback, keyword, page) {
 						for (var i = 0; titles.length > i; i++){
 							recipes.push(Object.assign({}, titles[i], ratings[i]));
 						}
-						console.log(recipes);   // debug
+						// console.log(recipes);   // debug
 						callback (null, recipes)
 					}
 				},
