@@ -73,7 +73,7 @@ var recipeSchema = mongoose.Schema({
     source: String
 });
 
-recipeSchema.plugin(uniqueValidator, {message: '{VALUE} is already in use.'});
+recipeSchema.plugin(uniqueValidator, {message: 'Title "{VALUE}" is already in use.'});
 
 Recipe = mongoose.model('Recipe', recipeSchema);
 

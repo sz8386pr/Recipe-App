@@ -17,7 +17,7 @@ for (var i = 0; i < external_links.length; i++) {
 	external_links[i].onclick = function(e) {
 		e.preventDefault();
 		var url = this.getAttribute('href');
-		alert(url);
+		console.log(url); // debug
 		modal_body.innerHTML = '<iframe width="100%" height="400px" frameborder="0" allowtransparency="true" src="'+url+'"></iframe>';
 		modal.style.display = "block";
 	};

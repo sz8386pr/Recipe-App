@@ -1,8 +1,8 @@
-<h4>Search result for <span style="color: #4f3224">{{toUpper keyword}}</span> on <span style="color: #4f3224">{{toUpper site}}</span></h4>
+<h4>Search result for <span class="search-header">{{toUpper keyword}}</span> on <span class="search-header">{{toUpper site}}</span></h4>
 
 {{#if recipes}}
 
-    {{#each recipes}}
+    {{#each recipes}} <!-- display recipe title and ratings with click-able link -->
         <p><a href="{{this.link}}" class="external-link">{{this.title}} Rating: {{this.rating}}</a></p>
     {{/each}}
 
@@ -10,21 +10,21 @@
     No recipes found
 {{/if}}
 
-{{page}}
+Page {{page}}
 
-{{#if (greaterThan recipes.length 19)}}
-    <form id='external-recipe-search-form' action="/external-recipes" method="POST" class="navigation-buttons">
+{{#if (greaterThan recipes.length 19)}}     <!-- next button will only show up if there still are 20 results on the page -->
+    <form id='external-recipe-search-form' action="/recipe/external-search/{{site}}" method="POST" class="navigation-buttons">
         <input type="hidden" name="site" value={{site}}>
         <input type="hidden" name="keyword" value={{keyword}}>
-        <input type="hidden" name="page" value={{add page 1}}>
+        <input type="hidden" name="page" value={{add page 1}}>  <!-- current page +1 to search next page -->
         <input id='search-button' type="submit" value="Next">
     </form>
 {{/if}}
-{{#if (greaterThan page 1)}}
-    <form id='external-recipe-search-form' action="/external-recipes" method="POST" class="navigation-buttons">
+{{#if (greaterThan page 1)}}    <!-- previous button will only show up if the current page is 2+ -->
+    <form id='external-recipe-search-form' action="/recipe/external-search/{{site}}" method="POST" class="navigation-buttons">
         <input type="hidden" name="site" value={{site}}>
         <input type="hidden" name="keyword" value={{keyword}}>
-        <input type="hidden" name="page" value={{add page -1}}>
+        <input type="hidden" name="page" value={{add page -1}}>  <!-- current page -1 to search previous page -->
         <input id='search-button' type="submit" value="Previous">
     </form>
 {{/if}}

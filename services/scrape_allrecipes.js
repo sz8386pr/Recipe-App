@@ -94,7 +94,21 @@ function get_recipe(callback, keyword, page) {
 						for (var i = 0; titles.length > i; i++){
 							recipes.push(Object.assign({}, titles[i], ratings[i]));
 						}
-						// console.log(recipes);   // debug
+
+						// TODO: because number of reviews is displayed using js/jquery, data gathered with Axios doesn't contain information
+						// // number of reviews
+						// let reviews = [];
+						// $('.fixed-recipe-card__reviews').each(function() {
+						// 	let review = $(this).text();
+						// 	reviews.push({'reviews': review})
+						// });
+						//
+						// // merge the arrays of dictionaries together
+						// let recipes = [];
+						// for (var i = 0; titles.length > i; i++){
+						// 	recipes.push(Object.assign({}, titles[i], ratings[i], reviews[i]));
+						// }
+						console.log(recipes);   // debug
 						callback (null, recipes)
 					}
 				},

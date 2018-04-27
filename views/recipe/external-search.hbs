@@ -1,0 +1,29 @@
+<h3>Search recipes from other sources</h3>
+
+<!-- Search failure messages-->
+<ul>{{#each messages}}
+    <li>{{this}}</li>
+{{/each}}
+</ul>
+
+<div id="search-div">
+    <form id='external-recipe-search-form' method="POST">
+        <span id="site-span">
+            <select id='site' name="site" title="Pick a site to search from" required>
+                <option value="" selected disabled hidden>Choose Site</option>
+                <option value="allrecipes">Allrecipes</option>
+            </select>
+        </span>
+        <span id="keyword-span">
+            <input id='keyword' type="text" name="keyword" placeholder="Enter a recipe name" value="" required>
+        </span>
+        <input id='search-button' type="submit" value="Search"/>
+    </form>
+</div>
+
+<script>
+    // when user changes the site select menu, set it's value to the form action value
+    document.getElementById('site').onchange = function(){
+    	document.getElementById('external-recipe-search-form').setAttribute('action', this.value);
+    }
+</script>

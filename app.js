@@ -13,6 +13,7 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
+var recipeRouter = require('./routes/recipe');
 
 var app = express();
 
@@ -67,6 +68,7 @@ mongoose.connect(mongo_url)
 
 // routers
 app.use('/auth', authRouter);
+app.use('/recipe', recipeRouter);
 app.use('/', indexRouter);
 
 // catch 404 and redirect to custom 404 page
