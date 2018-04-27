@@ -71,7 +71,7 @@ get_nutrition(function(err, json){
     else {
         console.log(json)
     }
-}, '2 boiled egg');
+}, '2 egg');
 
 
 module.exports = get_nutrition;

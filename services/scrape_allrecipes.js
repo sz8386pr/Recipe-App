@@ -18,6 +18,7 @@ let scrape = async (url) =>
                         category.push(cat);
                     }
                 });
+                category = category.join(' > ');  // join into a single string joined by >
 
                 let title = $('.recipe-summary__h1').text().trim(); // Title
                 let description = $('.submitter__description').text().trim();   // Author description
@@ -51,7 +52,7 @@ let scrape = async (url) =>
 
 
                 return {
-                    title, category, description, author, image, duration, serving, ingredients, directions, source: 'Allrecipes'
+                    title, category, description, author, image, duration, serving, ingredients, directions, source: 'Allrecipes.com'
                 };
 
             }

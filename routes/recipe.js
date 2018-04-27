@@ -3,8 +3,8 @@ var router = express.Router();
 var Allrecipes = require('../services/scrape_allrecipes');
 var ar_scrape = Allrecipes.scrape;
 var ar_get_recipe = Allrecipes.get_recipe;
-var recipe = require('../models/recipe.js');
-var flash = require('express-flash');
+var Recipe = require('../models/recipe.js');
+// var flash = require('express-flash');
 
 
 function isLoggedIn(req, res, next) {
@@ -16,19 +16,27 @@ function isLoggedIn(req, res, next) {
 	}
 }
 
-router.get('/test', function(reg, res, next) {
-	res.redirect('/')
-});
+function recipePage(req) {
+
+}
+
+// router.get('/test', function(reg, res, next) {
+// 	res.redirect('/')
+// });
 
 // user need to get authenticated/logged in
 router.use(isLoggedIn);
+
+// global middleware filter reference: https://github.com/expressjs/body-parser/issues/245
+// router.use((req, res, next) => shouldParseRequest(req) ? isLoggedIn : next());
+
+
 
 
 // GET recipe/external-search page
 router.get('/external-search', function(req, res, next) {
 	res.render('./recipe/external-search', {user: req.user})
 });
-
 
 // POST external-recipes/<site>
 router.post('/external-search/:site', function(req, res, next) {
@@ -78,7 +86,7 @@ router.get('/create', function(req, res, next) {
 router.post('/create', function(req, res, next) {
 
 	// create initial new recipe object
-	let newRecipe = new recipe({
+	let newRecipe = new Recipe({
 		author: req.user.username, title: req.body.title, category: req.body.category, description: req.body.description,
 		duration:{ value: req.body.duration_value, unit: req.body.duration_unit}, serving: req.body.serving,
 		source: 'local'
@@ -103,15 +111,46 @@ router.post('/create', function(req, res, next) {
 	else{
 		newRecipe.directions = req.body.directions
 	}
-	
+
 	// save the task, and redirect to home page if successful
-	newRecipe.save().then((recipe) => {
+	newRecipe.save()
+		.then((recipe) => {
 		console.log('New recipe created: ', recipe); //debug
-		res.redirect('/');  // Creates a GET request to
-	}).catch((err) => {
+		res.render('./recipe/recipe', {user: req.user, recipe: newRecipe}) // Creates a GET request to
+
+	})
+	.catch((err) => {
 		req.flash('errorMsg', 'Error creating recipe');
 		next(err);  // Forward error to the error handlers
 	});
+});
+
+
+
+
+
+router.get('/all-recipes', function(req, res, next) {
+	Recipe.find({}, function(err, recipes) {
+		if (err) {
+			res.redirect('/')
+		}
+		else {
+			res.render('./recipe/all_recipes', {user: req.user, recipes: recipes})
+		}
+	})
+});
+
+// GET recipe page. Needs to be at the very bottom else other pages below wouldn't be used
+router.get('/:title', function(req, res, next) {
+	console.log(req.params.title);
+	Recipe.findOne({'title': req.params.title})
+		.then( (recipe) => {
+			res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+		})
+		.catch( (error) => {
+			req.flash('errorMsg', error);
+			res.redirect('/');
+		})
 });
 
 module.exports = router;

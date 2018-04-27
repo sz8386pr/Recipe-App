@@ -32,6 +32,9 @@ hbs.registerHelper('greaterThan', function(from, to) {  //greaterThan will compa
 hbs.registerHelper('add', function(addTo, value) {
 	return parseInt(addTo) + value
 });
+hbs.registerHelper('equals', function(a, b) {
+	return a === b
+});
 
 
 

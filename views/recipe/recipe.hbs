@@ -1,0 +1,28 @@
+{{#if (equals recipe.author user.username)}}
+    modify
+{{/if}}
+
+<p>Category: {{recipe.category}}</p>
+<h3>{{recipe.title}}</h3>
+
+by {{recipe.author}}
+<!-- if source is not local, in another words, from external sources, display sources -->
+{{#unless (equals recipe.source "local") }}
+    from {{recipe.source}}
+{{/unless}}
+
+<p>Description: {{recipe.description}}</p>
+<p>Duration: {{recipe.duration.value}} {{recipe.duration.unit}}</p>
+<p>Servings: {{recipe.serving}}</p>
+
+Ingredients:<ul>
+{{#each recipe.ingredients}}
+    <li>{{this.value}} {{this.unit}} {{this.name}}</li>
+{{/each}}
+</ul>
+
+Directions:<ol>
+    {{#each recipe.directions}}
+        <li>{{this}}</li>
+    {{/each}}
+</ol>
