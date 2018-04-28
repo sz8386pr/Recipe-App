@@ -12,6 +12,9 @@ var close = document.getElementById("close-button");
 // Get the modal-body element
 var modal_body = document.getElementById('modal-body');
 
+var save_url = document.getElementById('save_url');
+
+
 // When the user clicks the button, open the modal
 for (var i = 0; i < external_links.length; i++) {
 	external_links[i].onclick = function(e) {
@@ -19,6 +22,7 @@ for (var i = 0; i < external_links.length; i++) {
 		var url = this.getAttribute('href');
 		console.log(url); // debug
 		modal_body.innerHTML = '<iframe width="100%" height="400px" frameborder="0" allowtransparency="true" src="'+url+'"></iframe>';
+		save_url.value = url;
 		modal.style.display = "block";
 	};
 }
@@ -33,4 +37,5 @@ window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
-}
+};
+

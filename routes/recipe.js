@@ -49,7 +49,7 @@ router.post('/external-search/:site', function(req, res, next) {
 	if (page === undefined) {
 		page = '1'
 	}
-	console.log(site, keyword, page);   // debug
+	// console.log(site, keyword, page);   // debug
 
 
 	if (keyword === ''){
@@ -84,39 +84,46 @@ router.get('/create', function(req, res, next) {
 
 // POST recipe create page
 router.post('/create', function(req, res, next) {
+	let duration = '';
+	if (req.body.duration_hour > 0) {
+		duration += (req.body.duration_hour + ' h ')
+	}
+	if (req.body.duration_minute > 0) {
+		duration += (req.body.duration_minute + ' m')
+	}
 
 	// create initial new recipe object
 	let newRecipe = new Recipe({
 		author: req.user.username, title: req.body.title, category: req.body.category, description: req.body.description,
-		duration:{ value: req.body.duration_value, unit: req.body.duration_unit}, serving: req.body.serving,
+		duration: duration, serving: req.body.serving,
 		source: 'local'
 	});
 
 	// if the ingredients value/unit/name is an array/object push to the ingredients list
-	if (typeof req.body.ingredients_value === 'object') {
-		for (var i=0; i < req.body.ingredients_value.length; i++) {
-			newRecipe.ingredients.push({value: req.body.ingredients_value[i], unit: req.body.ingredients_unit[i], name: req.body.ingredients_name[i]})
-		}
+	if (typeof req.body.ingredients === 'object') {
+		req.body.ingredients.forEach(function(ingredient){
+			newRecipe.ingredients.push(ingredient);
+		})
 	}
 	else{
-		newRecipe.ingredients = {value: req.body.ingredients_value, unit: req.body.ingredients_unit, name: req.body.ingredients_name}
+		newRecipe.ingredients.push(req.body.ingredients);
 	}
 
 	// if the directions is an array, push to the list
 	if (typeof req.body.directions === 'object') {
-		for (var ind = 0; ind < req.body.directions.length; ind++) {
-			newRecipe.directions.push(req.body.directions[ind])
-		}
+		req.body.directions.forEach(function(direction){
+			newRecipe.directions.push(direction);
+		})
 	}
 	else{
-		newRecipe.directions = req.body.directions
+		newRecipe.directions.push(req.body.directions);
 	}
 
-	// save the task, and redirect to home page if successful
+	// save the recipe and then redirect to the recipe page
 	newRecipe.save()
 		.then((recipe) => {
 		console.log('New recipe created: ', recipe); //debug
-		res.render('./recipe/recipe', {user: req.user, recipe: newRecipe}) // Creates a GET request to
+		res.render('./recipe/recipe', {user: req.user, recipe: recipe}) // Creates a GET request to
 
 	})
 	.catch((err) => {
@@ -125,10 +132,7 @@ router.post('/create', function(req, res, next) {
 	});
 });
 
-
-
-
-
+// GET all recipe lists
 router.get('/all-recipes', function(req, res, next) {
 	Recipe.find({}, function(err, recipes) {
 		if (err) {
@@ -140,9 +144,68 @@ router.get('/all-recipes', function(req, res, next) {
 	})
 });
 
+// POST save external recipe
+router.post('/save', function(req,res, next) {
+	let url = req.body.save_url;
+	console.log(url)
+
+	ar_scrape(function(err, recipe){
+		if (err){
+			console.log('ee')
+			res.render('error') // TODO render error page
+		}
+		else {
+			console.log({
+				author: recipe.author, title: recipe.title, category: recipe.category, description: recipe.description,
+				duration: recipe.duration, serving: recipe.serving, source: recipe.source
+			});
+			// create initial saved recipe object
+			let savedRecipe = new Recipe({
+				author: recipe.author, title: recipe.title, category: recipe.category, description: recipe.description,
+				duration: recipe.duration, serving: recipe.serving, source: recipe.source
+			});
+
+			recipe.ingredients.forEach(function(ingredient){
+				savedRecipe.ingredients.push(ingredient);
+				// console.log(ingredient)
+			});
+
+			// console.log(typeof recipe.directions[1]);
+			// console.log(recipe.directions.length);
+			recipe.directions.forEach(function(direction){
+				// console.log(direction);
+				savedRecipe.directions.push(direction)
+			});
+
+			// save the recipe and then redirect to the recipe page
+			savedRecipe.save()
+				.then((recipe) => {
+					console.log('Recipe copied: ', recipe); //debug
+					res.render('./recipe/recipe', {user: req.user, recipe: savedRecipe}) // Creates a GET request to
+
+				})
+				.catch((err) => {
+					req.flash('errorMsg', 'Error saving recipe');
+					// res.render('./recipe/recipe', {recipe: savedRecipe, user: req.user});
+					next(err);  // Forward error to the error handlers
+				});
+		}
+	}, url);
+
+});
+
+
+
+
+
+
+
+
+
+
+
 // GET recipe page. Needs to be at the very bottom else other pages below wouldn't be used
 router.get('/:title', function(req, res, next) {
-	console.log(req.params.title);
 	Recipe.findOne({'title': req.params.title})
 		.then( (recipe) => {
 			res.render('./recipe/recipe', {user: req.user, recipe: recipe});

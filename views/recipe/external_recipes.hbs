@@ -40,10 +40,12 @@ Page {{page}}
             <h2>Modal Header</h2>
         </div>
         <div id="modal-body">
-            11<!--<iframe width="100%" height="500px" frameborder="0" allowtransparency="true" src="https://www.allrecipes.com/recipe/223042/chicken-parmesan/"></iframe>-->
         </div>
         <div class="modal-footer">
-            <h3>Modal Footer</h3>
+            <form id="save-form" action="/recipe/save/" method="POST">
+                <input type="hidden" id="save_url" name="save_url">
+                <input type="submit" value="Copy">
+            </form>
         </div>
     </div>
 

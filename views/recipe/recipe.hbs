@@ -12,12 +12,12 @@ by {{recipe.author}}
 {{/unless}}
 
 <p>Description: {{recipe.description}}</p>
-<p>Duration: {{recipe.duration.value}} {{recipe.duration.unit}}</p>
+<p>Cooking Time: {{recipe.duration}}</p>
 <p>Servings: {{recipe.serving}}</p>
 
 Ingredients:<ul>
 {{#each recipe.ingredients}}
-    <li>{{this.value}} {{this.unit}} {{this.name}}</li>
+    <li>{{this}}</li>
 {{/each}}
 </ul>
 
