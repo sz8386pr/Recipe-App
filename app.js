@@ -14,6 +14,7 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var recipeRouter = require('./routes/recipe');
+var userRouter = require('./routes/user');
 
 var app = express();
 
@@ -36,6 +37,33 @@ hbs.registerHelper('equals', function(a, b) {
 	return a === b
 });
 
+// ifCond reference from https://stackoverflow.com/questions/8853396/logical-operator-in-a-handlebars-js-if-conditional
+hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
+	switch (operator) {
+		case '==':
+			return (v1 == v2) ? options.fn(this) : options.inverse(this);
+		case '===':
+			return (v1 === v2) ? options.fn(this) : options.inverse(this);
+		case '!=':
+			return (v1 != v2) ? options.fn(this) : options.inverse(this);
+		case '!==':
+			return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+		case '<':
+			return (v1 < v2) ? options.fn(this) : options.inverse(this);
+		case '<=':
+			return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+		case '>':
+			return (v1 > v2) ? options.fn(this) : options.inverse(this);
+		case '>=':
+			return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+		case '&&':
+			return (v1 && v2) ? options.fn(this) : options.inverse(this);
+		case '||':
+			return (v1 || v2) ? options.fn(this) : options.inverse(this);
+		default:
+			return options.inverse(this);
+	}
+});
 
 
 
@@ -70,8 +98,9 @@ mongoose.connect(mongo_url)
 
 
 // routers
-app.use('/auth', authRouter);
+app.use('/user', userRouter);
 app.use('/recipe', recipeRouter);
+app.use('/auth', authRouter);
 app.use('/', indexRouter);
 
 // catch 404 and redirect to custom 404 page
@@ -91,8 +120,18 @@ app.use(function(err, req, res, next) {
 	    var flash_message = err.errors[err_path].message;   // flash message
         req.flash('signupMsg', flash_message);
 
-        // redirect to prevoius page ie: sign up/login
+        // redirect to previous page ie: sign up/login
 	    var backURL = req.header('Referer');
+	    res.redirect(backURL);
+    }
+    // Usually a duplicate name
+    else if (err.name === "MongoError") {
+    	// if error message contains duplicate key error, it means that the duplicate name already exists in the db
+    	if (err.message.includes('E11000 duplicate key error')) {
+		    req.flash('errorMsg', 'Name already exists. Choose a different name');
+	    }
+	    // redirect to previous page ie: sign up/login
+	    backURL = req.header('Referer');
 	    res.redirect(backURL);
     }
     else {

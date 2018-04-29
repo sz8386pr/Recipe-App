@@ -1,15 +1,43 @@
-{{#if (equals recipe.author user.username)}}
-    modify
-{{/if}}
+<!-- Owner/saver can access these menu -->
+{{#ifCond (equals recipe.author user.username) '||' (equals recipe.saved_by user.username)}}
+    <!-- If not published, owner/saver can publish it -->
+    {{#if (equals recipe.published false)}}
+        <!-- Only the author can modify when the recipe is unpublished. Saved person can only publish/unpublish/delete the recipe to keep the original recipe -->
+        {{#ifCond recipe.author '===' user.username}}
+            <a href="/recipe/modify/{{recipe.title}}"><button id="modify-button" onclick="return confirm('Do you want to modify this recipe?')">Modify</button></a>
+        {{/ifCond}}
+
+        <p>This recipe is not published yet.</p>
+        <form id='publish' action="/recipe/publish/{{recipe.title}}" method="POST">
+            <input id='publish-button' type="submit" value="Publish recipe"  onclick="return confirm('Are you sure you want to publish this recipe?')">
+        </form>
+
+    <!-- if published, owner/saver can unpublish it or delete it-->
+    {{else}}
+        <p>This recipe is already published. Unpublish if you want to modify it/p>
+        <form id='unpublish' action="/recipe/unpublish/{{recipe.title}}" method="POST">
+            <input id='unpublish-button' type="submit" value="Unpublish recipe" onclick="return confirm('Are you sure you want to UNPUBLISH this recipe?')">
+        </form>
+    {{/if}}
+
+{{/ifCond}}
+
+
+<!-- Recipe data -->
+<p>Favorited: {{recipe.favorite}} times</p>
+<p>Average Rating: <span id="avg-rating">0</span> Rated: <span id="times-rating"></span> times</p>
 
 <p>Category: {{recipe.category}}</p>
 <h3>{{recipe.title}}</h3>
-
-by {{recipe.author}}
+by
 <!-- if source is not local, in another words, from external sources, display sources -->
-{{#unless (equals recipe.source "local") }}
+{{#if (equals recipe.source "local") }}
+    <a href="/user/{{recipe.author}}">{{recipe.author}}</a>
+{{else}}
+  {{recipe.author}}
     from {{recipe.source}}
-{{/unless}}
+  <p>Saved by <a href="/user/{{recipe.saved_by}}">{{recipe.saved_by}}</a></p>
+{{/if}}
 
 <p>Description: {{recipe.description}}</p>
 <p>Cooking Time: {{recipe.duration}}</p>
@@ -26,3 +54,18 @@ Directions:<ol>
         <li>{{this}}</li>
     {{/each}}
 </ol>
+
+<script>
+    let rating = [{{recipe.rating}}];
+    let rating_length = rating.length;
+    let total_rating = 0;
+    rating.forEach(function(r) { total_rating += r});
+    let avg_rating = total_rating / rating_length;
+    console.log(rating, rating_length, total_rating, avg_rating);
+
+    if (avg_rating) {
+        document.getElementById('avg-rating').innerText = avg_rating
+    }
+    document.getElementById('times-rating').innerText = rating_length
+
+</script>

@@ -1,0 +1,24 @@
+{{#if (equals profile_user.username user.username)}}
+    modify
+{{/if}}
+
+<h3>{{profile_user.username}}</h3>
+
+<p>Email: {{profile_user.email}}</p>
+<p>Joined on: {{profile_user.sign_up_date}}</p>
+
+<h4>Your recipes</h4>
+{{#if created_recipes}}
+    <ul>
+        {{#each created_recipes}}
+            <li><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+        {{/each}}
+    </ul>
+{{else}}
+    {{#if (equals profile_user.username user.username)}}
+        <p>You don't have any recipes created yet.</p>
+        <p>How about <a href="/recipe/create">create one now?</a></p>
+    {{else}}
+        <p>{{profile_user.username}} doesn't have any recipes yet</p>
+    {{/if}}
+{{/if}}

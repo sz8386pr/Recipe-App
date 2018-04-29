@@ -1,0 +1,39 @@
+<h2>Modify Recipe</h2>
+
+<!-- Create failure messages-->
+<ul>{{#each messages}}
+    <li>{{this}}</li>
+{{/each}}
+</ul>
+
+<form action="/recipe/modify/{{recipe._id}}" method="POST">
+    Title:          <input title="Please enter recipe title." type="text" name="title" maxlength="255" placeholder="Recipe title" value={{recipe.title}} required><br>
+    Category:       <input title="Please enter recipe category." type="text" name="category" maxlength="255" placeholder="ie: American/Asian/Italian/Dessert..." value={{recipe.category}} required><br>
+    Description:    <input title="Please enter recipe description." type="text" name="description" maxlength="2048" placeholder="Recipe description" value={{recipe.description}} required><br>
+    Cooking time:   <input type="number" name="duration_hour" min=0 max=128 placeholder="hours" value={{hour}} required> h
+                    <input type="number" name="duration_minute" min=0 max=60 placeholder="minutes" value={{minute}} required> m<br>
+    Serving Size:   <input title="Value must be greater than or equal to 1." type="number" name="serving" min=1 max=255 placeholder="Number of servings" value={{recipe.serving}} required><br>
+    Ingredients:    {{#each recipe.ingredients}}
+                        {{#if @first}}
+                            <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
+                            <button id="add-ingredient">+</button><br><span id="additional-ingredient">
+                        {{else}}
+                            <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
+                            <button class="minus-ingredient">-</button><br>
+                        {{/if}}
+                    {{/each}}</span>
+    Directions:     {{#each recipe.directions}}
+                        {{#if @first}}
+                            <input title="Please enter recipe direction." type="text" name="directions" maxlength="8192" placeholder="ie: Preheat oven to 350F" value={{this}} required>
+                            <button id="add-directions">+</button><br><span id="additional-directions">
+                        {{else}}
+                            <input title="Please enter recipe direction." type="text" name="directions" maxlength="255" placeholder="ie: Preheat oven to 350F" value={{this}} required>
+                            <button class="minus-directions">-</button><br>
+                        {{/if}}
+                    {{/each}}</span>
+    Photo:          TODO<br><br>
+
+    <input type="submit" name="modify-recipe" value="modify Recipe"  onclick="return confirm('Are you sure you want to modify this recipe?')">
+</form>
+
+<script src="/javascripts/recipe_modify.js"></script>

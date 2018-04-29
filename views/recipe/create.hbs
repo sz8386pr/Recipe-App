@@ -10,8 +10,8 @@
     Title:          <input title="Please enter recipe title." type="text" name="title" maxlength="255" placeholder="Recipe title" required><br>
     Category:       <input title="Please enter recipe category." type="text" name="category" maxlength="255" placeholder="ie: American/Asian/Italian/Dessert..." required><br>
     Description:    <input title="Please enter recipe description." type="text" name="description" maxlength="2048" placeholder="Recipe description" required><br>
-    Cooking time:   <input type="number" name="duration_hour" min=0 max=128 step="1" placeholder="hours" required> h
-                    <input type="number" name="duration_minute" min=0 max=59 step="0.5" placeholder="minutes" required> m<br>
+    Cooking time:   <input type="number" name="duration_hour" min=0 max=128 placeholder="hours" value=0 required> h
+                    <input type="number" name="duration_minute" min=0 max=60 placeholder="minutes" value=0 required> m<br>
     Serving Size:   <input title="Value must be greater than or equal to 1." type="number" name="serving" min=1 max=255 placeholder="Number of servings" required><br>
     Ingredients:    <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" required>
                     <button id="add-ingredient">+</button><br>

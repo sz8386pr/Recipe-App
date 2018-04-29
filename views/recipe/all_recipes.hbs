@@ -1,3 +1,18 @@
+<h3>All recipes</h3>
 {{#each recipes}}
     <p><a href="/recipe/{{this.title}}">{{this.title}}</a> by {{this.author}}</p>
+{{/each}}
+
+<h3>published recipes</h3>
+{{#each recipes}}
+    {{#if this.published}}
+        <p><a href="/recipe/{{this.title}}">{{this.title}}</a> by {{this.author}}</p>
+    {{/if}}
+{{/each}}
+
+<h3>unpublished recipes</h3>
+{{#each recipes}}
+    {{#unless this.published}}
+        <p><a href="/recipe/{{this.title}}">{{this.title}}</a> by {{this.author}}</p>
+    {{/unless}}
 {{/each}}

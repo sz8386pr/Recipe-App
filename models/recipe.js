@@ -25,6 +25,7 @@ var recipeSchema = mongoose.Schema({
 	    required: [true, "Can't be blank"]
     },
     author: String,
+	saved_by: String,
     image: String,
     duration: {
         type: String,
@@ -51,7 +52,23 @@ var recipeSchema = mongoose.Schema({
 	    maxlength: [2048, 'Too many characters'],
 	    required: [true, 'Needs direction']
     }],
-    source: String
+    source: String,
+	published: {
+    	type: Boolean,
+		default: false,
+	},
+	favorite: {
+    	type: Number,
+		default: 0,
+		min: 0,
+		max: 100000
+	},
+	rating: [{
+    	type: Number,
+		min: 1,
+		max: 5
+	}]
+
 });
 
 recipeSchema.plugin(uniqueValidator, {message: 'Title "{VALUE}" is already in use.'});
