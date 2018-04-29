@@ -271,8 +271,6 @@ router.get('/modify/:title', function(req, res, next) {
 				else {
 					minute = duration.split('m')[0];
 				}
-
-
 				res.render('./recipe/modify', {user: user, recipe: recipe, hour: hour, minute: minute})
 			}
 			else {  // otherwise, set status to 403

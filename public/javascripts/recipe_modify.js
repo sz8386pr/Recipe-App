@@ -13,12 +13,20 @@ directions_row.innerHTML = '<input title="Please enter recipe direction." type="
 // additional input row counter
 var ingredients_counter = document.querySelectorAll('.minus-ingredient').length + 1;
 var directions_counter = document.querySelectorAll('.minus-directions').length + 1;
+var minus_ingredient = document.getElementsByClassName('minus-ingredient');
+var minus_directions = document.getElementsByClassName('minus-directions');
 
 // up to 127 more lines (arbitrary max limit to prevent abuse) of ingredients input row
+// parentNode.remove() reference: https://stackoverflow.com/questions/46665554/remove-parent-element-on-click-with-plain-javascript
 document.getElementById('add-ingredient').onclick = function() {
 	if (ingredients_counter < 127) {
 		document.getElementById('additional-ingredient').appendChild(ingredient_row.cloneNode(true));
 		ingredients_counter++;
+		for (var i = 0; i < minus_ingredient.length; i++) {
+			minus_ingredient[i].addEventListener('click', function(e) {
+				e.currentTarget.parentNode.remove();
+			}, false);
+		}
 	}
 };
 
@@ -27,5 +35,21 @@ document.getElementById('add-directions').onclick = function() {
 	if (directions_counter < 127) {
 		document.getElementById('additional-directions').appendChild(directions_row.cloneNode(true));
 		directions_counter++;
+		for (var i = 0; i < minus_directions.length; i++) {
+			minus_directions[i].addEventListener('click', function(e) {
+				e.currentTarget.parentNode.remove();
+			}, false);
+		}
 	}
 };
+
+for (var i = 0; i < minus_ingredient.length; i++) {
+	minus_ingredient[i].addEventListener('click', function(e) {
+		e.currentTarget.parentNode.remove();
+	}, false);
+}
+for (var i = 0; i < minus_directions.length; i++) {
+	minus_directions[i].addEventListener('click', function(e) {
+		e.currentTarget.parentNode.remove();
+	}, false);
+}

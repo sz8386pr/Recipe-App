@@ -18,8 +18,8 @@
                             <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
                             <button id="add-ingredient">+</button><br><span id="additional-ingredient">
                         {{else}}
-                            <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
-                            <button class="minus-ingredient">-</button><br>
+                            <span><input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
+                            <button class="minus-ingredient">-</button><br></span>
                         {{/if}}
                     {{/each}}</span>
     Directions:     {{#each recipe.directions}}
@@ -27,13 +27,14 @@
                             <input title="Please enter recipe direction." type="text" name="directions" maxlength="8192" placeholder="ie: Preheat oven to 350F" value={{this}} required>
                             <button id="add-directions">+</button><br><span id="additional-directions">
                         {{else}}
-                            <input title="Please enter recipe direction." type="text" name="directions" maxlength="255" placeholder="ie: Preheat oven to 350F" value={{this}} required>
-                            <button class="minus-directions">-</button><br>
+                            <span><input title="Please enter recipe direction." type="text" name="directions" maxlength="255" placeholder="ie: Preheat oven to 350F" value={{this}} required>
+                            <button class="minus-directions">-</button><br></span>
                         {{/if}}
                     {{/each}}</span>
     Photo:          TODO<br><br>
 
     <input type="submit" name="modify-recipe" value="modify Recipe"  onclick="return confirm('Are you sure you want to modify this recipe?')">
 </form>
+<a href="/recipe/{{recipe.title}}"><button onclick="return confirm('Cancel and go back to recipe page?')">Cancel</button></a>
 
 <script src="/javascripts/recipe_modify.js"></script>
