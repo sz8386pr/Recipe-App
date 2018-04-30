@@ -29,8 +29,8 @@
 </ul>
 <!-- favorite button -->
 <form action="/user/favorite/{{recipe._id}}" method="POST">
-    <input type="hidden" value='favorite' name="favorite" id="favorite">
-    <input type="submit" value="Favorite" id="favorite-button" onclick="return confirm('Do you want to favorite this recipe?')">
+    <input type="hidden" name="favorite" id="favorite">
+    <input type="submit" id="favorite-button" disabled>
 </form>
 
 <!-- Rating button -->
@@ -45,40 +45,48 @@
             <option value="5" label="5">
         </datalist>
         <output for="rating" id="rating-display">5</output>
-    <input type="submit" value="Rate recipe" id="rating-button" onclick="return confirm('Do you want to rate this recipe?')">
+    <input type="submit" value="Rate recipe" id="rating-button" onclick="return confirm('Do you want to rate this recipe?')"> <span id="user-rating"></span>
 </form>
 
+<!-- print area reference from: https://stackoverflow.com/questions/468881/print-div-id-printarea-div-only -->
+<button onclick="window.print();">Print this recipe</button>
 <!-- Recipe data -->
-<p>Favorited: {{recipe.favorite}} times</p>
-<p>Average Rating: <span id="avg-rating">0</span> Rated: <span id="times-rating">0</span> times</p>
+<div id="recipe-area">
+    <span id="print-header"><h3>This recipe is provided by Scott's Recipes</h3></span>
+    <p>Favorited: {{recipe.favorite}} times</p>
+    <p>Average Rating: <span id="avg-rating">0</span> Rated: <span id="times-rating">0</span> times</p>
 
-<p>Category: {{recipe.category}}</p>
-<h3>{{recipe.title}}</h3>
-by
-<!-- if source is not local, in another words, from external sources, display sources -->
-{{#if (equals recipe.source "local") }}
-    <a href="/user/users/{{recipe.author}}">{{recipe.author}}</a>
-{{else}}
-  {{recipe.author}}
-    from {{recipe.source}}
-  <p>Saved by <a href="/user/users/{{recipe.saved_by}}">{{recipe.saved_by}}</a></p>
-{{/if}}
+    <p>Category: {{recipe.category}}</p>
+    <h3>{{recipe.title}}</h3>
+    by
+    <!-- if source is not local, in another words, from external sources, display sources -->
+    {{#if (equals recipe.source "local") }}
+        <a href="/user/users/{{recipe.author}}">{{recipe.author}}</a>
+    {{else}}
+        {{recipe.author}}
+        from {{recipe.source}}
+        <p>Saved by <a href="/user/users/{{recipe.saved_by}}">{{recipe.saved_by}}</a></p>
+    {{/if}}
 
-<p>Description: {{recipe.description}}</p>
-<p>Cooking Time: {{recipe.duration}}</p>
-<p>Servings: {{recipe.serving}}</p>
+    <p>Description: {{recipe.description}}</p>
+    <p>Cooking Time: {{recipe.duration}}</p>
+    <p>Servings: {{recipe.serving}}</p>
 
-Ingredients:<ul>
-{{#each recipe.ingredients}}
-    <li>{{this}}</li>
-{{/each}}
-</ul>
+    Ingredients:
+    <ul>
+        {{#each recipe.ingredients}}
+            <li>{{this}}</li>
+        {{/each}}
+    </ul>
 
-Directions:<ol>
-    {{#each recipe.directions}}
-        <li>{{this}}</li>
-    {{/each}}
-</ol>
+    Directions:
+    <ol>
+        {{#each recipe.directions}}
+            <li>{{this}}</li>
+        {{/each}}
+    </ol>
+</div>
+
 
 <script>
     // set & calculate rating values
@@ -98,6 +106,35 @@ Directions:<ol>
     // for updating rating slider value display
     function ratingUpdate(rating) {
         document.getElementById('rating-display').value = rating;
+    }
+
+    // If user already have favorited this recipe, direct to unfavorite button, else if user hasn't favorited it, direct to favorite button
+    let favorites = '{{user.favorite}}';
+    let recipe_id = '{{recipe._id}}';
+    if (favorites.includes(recipe_id)) {
+    	document.getElementById('favorite').value = 'unfavorite';
+        document.getElementById('favorite-button').value = 'unfavorite';
+        document.getElementById('favorite-button').onclick = function(){return confirm('Do you want to unfavorite this recipe?')};
+        document.getElementById('favorite-button').disabled = false;
+    }
+    else {
+        document.getElementById('favorite').value = 'favorite';
+        document.getElementById('favorite-button').value = 'favorite';
+        document.getElementById('favorite-button').onclick = function(){return confirm('Do you want to favorite this recipe?')};
+        document.getElementById('favorite-button').disabled = false;
+    }
+
+    // find user rating data
+    let user_rating = [];
+    {{#each user.rating}}
+        user_rating.push({'recipe_id':'{{this.recipe_id}}', 'rating': '{{this.rating}}'});
+    {{/each}}
+
+    // Find the previous recipe rating, and if found, display 'You have rated <previous_rating>' Message
+    let previous_rating = user_rating.find(function(o){return o["recipe_id"] === recipe_id}).rating;
+    console.log(previous_rating);
+    if (previous_rating) {
+    	document.getElementById('user-rating').innerText = 'You have rated ' + previous_rating;
     }
 
 </script>

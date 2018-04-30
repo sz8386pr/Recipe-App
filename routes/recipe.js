@@ -59,7 +59,7 @@ router.get('/recipes/:title', function(req, res, next) {
 					res.render('./recipe/recipe', {user: req.user, recipe: recipe});
 				}
 				else {
-					req.flash('errorMsg', 'Unauthorized access. This recipe is not published yet')
+					req.flash('errorMsg', 'Unauthorized access. This recipe is not published yet');
 					res.status(403);
 					next()
 				}

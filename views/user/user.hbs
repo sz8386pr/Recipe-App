@@ -13,18 +13,18 @@
         <!-- if user is the profile owner, show all created recipes -->
         {{#ifCond user.username '===' profile_user.username}}
             {{#each created_recipes}}
-                <li><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
+                <li class="created"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
             {{/each}}
         <!-- else, show only published created recipes -->
         {{else}}
             {{#each created_recipes}}
                 {{#ifCond this.published '===' true}}
-                    <li  class="published-created"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
+                    <li class="created"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
                 {{/ifCond}}
             {{/each}}
         {{/ifCond}}
     </ul>
-    <p id="no-published-created"></p>  <!-- use js to display there are no created recipes if nothing is published -->
+    <p id="no-created"></p>  <!-- use js to display as if there are no created recipes if nothing is published -->
 {{else}}
     {{#if (equals profile_user.username user.username)}}
         <p>You don't have any recipes created yet.</p>
@@ -40,18 +40,18 @@
         <!-- if user is the profile owner, show all saved recipes -->
         {{#ifCond user.username '===' profile_user.username}}
             {{#each saved_recipes}}
-                <li><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
+                <li class="saved"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
             {{/each}}
         {{else}}
             <!-- else, show only published saved recipes -->
             {{#each saved_recipes}}
                 {{#ifCond this.published '===' true}}
-                    <li class="published-saved"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
+                    <li class="saved"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
                 {{/ifCond}}
             {{/each}}
         {{/ifCond}}
     </ul>
-    <p id="no-published-saved"></p>    <!-- use js to display there are no created recipes if nothing is published -->
+    <p id="no-saved"></p>    <!-- use js to display as if there are no created recipes if nothing is published -->
 {{else}}
     {{#if (equals profile_user.username user.username)}}
         <p>You don't have any recipes created yet.</p>
@@ -61,18 +61,45 @@
     {{/if}}
 {{/if}}
 
+<!-- display favorite & saved for the profile owner only -->
+{{#if (equals user.username profile_user.username)}}
+
+    <h3>Your favorite recipes</h3>
+        {{#if favorite_recipes}}
+            <ul>
+                {{#each favorite_recipes}}
+                    <li class="favorite"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
+                {{/each}}
+            </ul>
+        {{else}}
+            You have no favorite recipes
+        {{/if}}
+
+    <h3>You have rated</h3>
+        {{#if rated_recipes}}
+            <ul>
+                {{#each rated_recipes}}
+                    <li class="favorite"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a> Your rating: {{this.rating}}</li>
+                {{/each}}
+            </ul>
+        {{else}}
+            You have not rated any recipes
+        {{/if}}
+
+{{/if}}
+
 <script>
-    let published_created = document.getElementsByClassName('published-created').length;
-    let published_saved = document.getElementsByClassName('published-saved').length;
-    let no_published_created = document.getElementById('no-published-created');
-    let no_published_saved = document.getElementById('no-published-saved');
+    let created = document.getElementsByClassName('created').length;
+    let saved = document.getElementsByClassName('saved').length;
+    let no_created = document.getElementById('no-created');
+    let no_saved = document.getElementById('no-saved');
 
     // If there are no published_created objects, display that there are no recipes created
-    if (published_created < 1) {
-        no_published_created.innerText = '{{profile_user.username}} doesn\'t have any recipes created yet'
+    if (created < 1) {
+        no_created.innerText = '{{profile_user.username}} doesn\'t have any recipes created yet'
     }
     // If there are no published_saved objects, display that there are no recipes saved
-    if (published_saved < 1) {
-        no_published_saved.innerText = '{{profile_user.username}} doesn\'t have any recipes saved yet'
+    if (saved < 1) {
+        no_saved.innerText = '{{profile_user.username}} doesn\'t have any recipes saved yet'
     }
 </script>

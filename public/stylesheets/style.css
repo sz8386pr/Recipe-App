@@ -33,3 +33,26 @@ a {
 .search-header {
   color: #338618;
 }
+
+#print-header {
+    display: none;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #recipe-area, #recipe-area * {
+        visibility: visible;
+    }
+    #recipe-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #print-header {
+        display: block;
+    }
+
+}

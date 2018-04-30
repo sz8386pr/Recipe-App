@@ -51,7 +51,7 @@ router.post('/favorite/:recipe_id', function(req, res, next) {
 				next(error)
 			});
 	}
-	else {
+	else if (req.body.favorite === 'unfavorite') {
 		// Check if the recipe has been favorited
 		User.findOne({ 'username' : req.user.username })
 			.then( (user) => {
@@ -146,51 +146,74 @@ router.post('/rate/:recipe_id', function(req, res, next) {
 
 });
 
-
-
-
-
 // GET recipe page.
 router.get('/users/:username', function(req, res, next) {
+	// categorize into created/saved recipes
+	let created_recipes = [];
+	let saved_recipes = [];
+	// Create favorite/rated recipe list
+	let favorite_recipes;
+	let rated_recipes = [];
 
 	// Find the user with the username
-	User.findOne({'username':req.params.username})
-		.then( (profile_user) => {
-			if (profile_user) {
-				// Find recipes that user has created
-				Recipe.find({$or: [{'author': req.params.username}, {'saved_by': req.params.username}] })
-					.then( (recipes) => {
-						// categorize into created/saved recipes
-						let created_recipes = [];
-						let saved_recipes = [];
-						recipes.forEach(function(recipe) {
-							if (recipe.source === 'local') {
-								created_recipes.push(recipe)
-							}
-							else {
-								saved_recipes.push(recipe)
-							}
-						});
-						res.render('./user/user', {user: req.user, created_recipes: recipes, saved_recipes: saved_recipes, profile_user: profile_user});
-					})
-					.catch( (error) => {
-						req.flash('errorMsg', error);
-						next(error)
-					})
-			}
-			else {  // If there is no user with the user name, next to error handler
-				req.flash('errorMsg', req.params.username + ' does not exists');
-				next()
-			}
+	User.findOne({username: req.params.username})
+		.then( (profile_user) =>{
+
+			// Find recipes that user has created/saved and push onto the appropriate list
+			Recipe.find({$or: [{'author': req.params.username}, {'saved_by': req.params.username}] })
+				.then( (recipes) => {
+					recipes.forEach(function(recipe) {
+						if (recipe.source === 'local') {
+							created_recipes.push(recipe)
+						}
+						else {
+							saved_recipes.push(recipe)
+						}
+					});
+
+					// If user is not the profile owner, display without favorite/rated recipes
+					if (req.user.username !== profile_user.username) {
+						res.render('./user/user', {user: req.user, created_recipes: created_recipes, saved_recipes: saved_recipes, profile_user: profile_user});
+					}
+					// If user is the profile owner, get favorite/rated recipes and display them as well
+					else {
+						Recipe.find({_id: profile_user.favorite}, 'title')
+							.then( (recipes) => {
+								favorite_recipes = (recipes);
+
+								// extract recipe_id  to find the recipes with the matching id
+								let rated_recipe_ids = profile_user.rating.map(x => x.recipe_id);
+								// console.log(rated_recipe_ids); //debug
+								Recipe.find({_id: rated_recipe_ids})
+									.then( (recipes) => {
+
+										// Find the title of the recipe with the matching id from the user's rating data and pair it with the rating
+										profile_user.rating.forEach(function(r){
+											let title = recipes.find(function(e) {return e._id == r.recipe_id}).title;
+											let rating = r.rating;
+											rated_recipes.push({title, rating})
+										});
+									// console.log(rated_recipes); //debug
+
+										// render profile page with the favorite_recipes and rated_recipes as well
+										res.render('./user/user', {user: req.user, created_recipes: created_recipes, saved_recipes: saved_recipes, profile_user: profile_user, favorite_recipes: favorite_recipes, rated_recipes: rated_recipes})
+									})
+									.catch( (error) => {
+										req.flash('errorMsg', error);
+										next(error)
+									});
+							});
+					}
+				})
+				.catch( (error) => {
+					req.flash('errorMsg', error);
+					next(error)
+				});
 		})
 		.catch( (error) => {
-		req.flash('errorMsg', error);
-		next(error)
+			req.flash('errorMsg', error);
+			next()
 	})
 });
-
-
-
-
 
 module.exports = router;
