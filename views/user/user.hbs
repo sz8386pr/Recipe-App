@@ -1,9 +1,12 @@
-{{#if (equals profile_user.username user.username)}}
-    modify
+{{#if (equals profile_user.name user.name)}}
+    <a href="/user/modify/{{user.username}}"><button onclick="return confirm('Do you want to modify your profile?')">Modify Profile</button></a>
 {{/if}}
 
-<h2>{{profile_user.username}}</h2>
+<h2>{{profile_user.username}}'s Profile</h2>
 
+{{#if profile_user.message}}
+    <h5>"{{profile_user.message}}"</h5>
+{{/if}}
 <p>Email: {{profile_user.email}}</p>
 <p>Joined on: {{profile_user.sign_up_date}}</p>
 
@@ -54,10 +57,9 @@
     <p id="no-saved"></p>    <!-- use js to display as if there are no created recipes if nothing is published -->
 {{else}}
     {{#if (equals profile_user.username user.username)}}
-        <p>You don't have any recipes created yet.</p>
-        <p>How about <a href="/recipe/create">create one now?</a></p>
+        <p>You don't have any recipes saved yet.</p>
     {{else}}
-        <p>{{profile_user.username}} doesn't have any recipes created yet</p>
+        <p>{{profile_user.username}} doesn't have any recipes saved yet</p>
     {{/if}}
 {{/if}}
 

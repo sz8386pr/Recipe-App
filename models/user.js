@@ -43,7 +43,8 @@ var userSchema = mongoose.Schema({
 			max: 5,
 			required: true
 		}
-	}]
+	}],
+	message: String
 
 });
 

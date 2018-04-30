@@ -146,6 +146,42 @@ router.post('/rate/:recipe_id', function(req, res, next) {
 
 });
 
+
+// GET profile modify page
+router.get('/modify/:username', function(req, res, next) {
+	// Check if the user is the owner of the modify page
+	let username = req.user.username;
+	console.log(username);
+	if (username === req.params.username) {
+		res.render('./user/modify', {user: req.user})
+	}
+	else {
+		req.flash('errorMsg', 'You don\'t have the right permission to access this page');
+		res.status(403);
+		next();
+	}
+});
+
+// POST profile modify page
+router.post('/modify/:username', function(req, res, next) {
+	// Check if the user is the owner of the modify page
+	if (req.user.username === req.params.username) {
+		User.findOneAndUpdate({username: req.params.username}, {message: req.body.message, email: req.body.email, photo: req.body.photo})
+			.then ( () => {
+				res.redirect('/user/users/' + req.user.username)
+			})
+			.catch( (error) => {
+				req.flash('errorMsg', 'Failed to modify profile');
+				next(error)
+			});
+	}
+	else {
+		req.flash('errorMsg', 'You don\'t have the right permission to access this page');
+		res.status(403);
+		next();
+	}
+});
+
 // GET recipe page.
 router.get('/users/:username', function(req, res, next) {
 	// categorize into created/saved recipes
@@ -193,7 +229,7 @@ router.get('/users/:username', function(req, res, next) {
 											let rating = r.rating;
 											rated_recipes.push({title, rating})
 										});
-									// console.log(rated_recipes); //debug
+										// console.log(rated_recipes); //debug
 
 										// render profile page with the favorite_recipes and rated_recipes as well
 										res.render('./user/user', {user: req.user, created_recipes: created_recipes, saved_recipes: saved_recipes, profile_user: profile_user, favorite_recipes: favorite_recipes, rated_recipes: rated_recipes})
@@ -213,7 +249,7 @@ router.get('/users/:username', function(req, res, next) {
 		.catch( (error) => {
 			req.flash('errorMsg', error);
 			next()
-	})
+		})
 });
 
 module.exports = router;
