@@ -22,21 +22,46 @@
 
 {{/ifCond}}
 
+<!-- Recipe failure messages-->
+<ul>{{#each messages}}
+    <li>{{this}}</li>
+{{/each}}
+</ul>
+<!-- favorite button -->
+<form action="/user/favorite/{{recipe._id}}" method="POST">
+    <input type="hidden" value='favorite' name="favorite" id="favorite">
+    <input type="submit" value="Favorite" id="favorite-button" onclick="return confirm('Do you want to favorite this recipe?')">
+</form>
+
+<!-- Rating button -->
+<!-- Slider reference: http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input -->
+<form action="/user/rate/{{recipe._id}}" method="POST">
+    <input type="range" list="rating-list" min="1" max="5" name="rating" id="rating" value="5" oninput="ratingUpdate(value)">
+        <datalist id="rating-list">
+            <option value="1" label="1">
+            <option value="2" label="2">
+            <option value="3" label="3">
+            <option value="4" label="4">
+            <option value="5" label="5">
+        </datalist>
+        <output for="rating" id="rating-display">5</output>
+    <input type="submit" value="Rate recipe" id="rating-button" onclick="return confirm('Do you want to rate this recipe?')">
+</form>
 
 <!-- Recipe data -->
 <p>Favorited: {{recipe.favorite}} times</p>
-<p>Average Rating: <span id="avg-rating">0</span> Rated: <span id="times-rating"></span> times</p>
+<p>Average Rating: <span id="avg-rating">0</span> Rated: <span id="times-rating">0</span> times</p>
 
 <p>Category: {{recipe.category}}</p>
 <h3>{{recipe.title}}</h3>
 by
 <!-- if source is not local, in another words, from external sources, display sources -->
 {{#if (equals recipe.source "local") }}
-    <a href="/user/{{recipe.author}}">{{recipe.author}}</a>
+    <a href="/user/users/{{recipe.author}}">{{recipe.author}}</a>
 {{else}}
   {{recipe.author}}
     from {{recipe.source}}
-  <p>Saved by <a href="/user/{{recipe.saved_by}}">{{recipe.saved_by}}</a></p>
+  <p>Saved by <a href="/user/users/{{recipe.saved_by}}">{{recipe.saved_by}}</a></p>
 {{/if}}
 
 <p>Description: {{recipe.description}}</p>
@@ -56,16 +81,23 @@ Directions:<ol>
 </ol>
 
 <script>
+    // set & calculate rating values
     let rating = [{{recipe.rating}}];
     let rating_length = rating.length;
     let total_rating = 0;
     rating.forEach(function(r) { total_rating += r});
     let avg_rating = total_rating / rating_length;
-    console.log(rating, rating_length, total_rating, avg_rating);
+    console.log(rating, rating_length, total_rating, avg_rating);  //debug
 
+    // if avg_rating has a value, display, otherwise, leave it as a default value of 0
     if (avg_rating) {
-        document.getElementById('avg-rating').innerText = avg_rating
+        document.getElementById('avg-rating').innerText = avg_rating.toFixed(1);
+        document.getElementById('times-rating').innerText = rating_length
     }
-    document.getElementById('times-rating').innerText = rating_length
+
+    // for updating rating slider value display
+    function ratingUpdate(rating) {
+        document.getElementById('rating-display').value = rating;
+    }
 
 </script>

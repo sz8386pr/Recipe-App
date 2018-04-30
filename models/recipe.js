@@ -31,7 +31,7 @@ var recipeSchema = mongoose.Schema({
         type: String,
 	    minlength: [1, 'Enter the time'],
 	    maxlength: [32, 'Too many characters'],
-	    required: [true, 'Needs duration unit']
+	    required: [true, 'Cooking time cannot be 0']
 	},
     serving: {
     	type: Number,

@@ -13,13 +13,13 @@
         <!-- if user is the profile owner, show all created recipes -->
         {{#ifCond user.username '===' profile_user.username}}
             {{#each created_recipes}}
-                <li><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+                <li><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
             {{/each}}
         <!-- else, show only published created recipes -->
         {{else}}
             {{#each created_recipes}}
                 {{#ifCond this.published '===' true}}
-                    <li  class="published-created"><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+                    <li  class="published-created"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
                 {{/ifCond}}
             {{/each}}
         {{/ifCond}}
@@ -40,13 +40,13 @@
         <!-- if user is the profile owner, show all saved recipes -->
         {{#ifCond user.username '===' profile_user.username}}
             {{#each saved_recipes}}
-                <li><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+                <li><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
             {{/each}}
         {{else}}
             <!-- else, show only published saved recipes -->
             {{#each saved_recipes}}
                 {{#ifCond this.published '===' true}}
-                    <li class="published-saved"><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+                    <li class="published-saved"><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a></li>
                 {{/ifCond}}
             {{/each}}
         {{/ifCond}}

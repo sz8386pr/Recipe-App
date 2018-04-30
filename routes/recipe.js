@@ -16,6 +16,11 @@ function isLoggedIn(req, res, next) {
 	}
 }
 
+
+
+
+
+
 router.use(isLoggedIn);
 // router.get('/test', function(reg, res, next) {
 // 	res.redirect('/')
@@ -38,7 +43,46 @@ router.use(isLoggedIn);
 //
 // 	app.use(maybe(express.bodyParser()));
 
+// GET recipe page. Needs to be at the very bottom else other pages below wouldn't be used
+router.get('/recipes/:title', function(req, res, next) {
+	let username = req.user.username;
+	Recipe.findOne({'title': req.params.title})
+		.then( (recipe) => {
+			// If user is either author or saver of the recipe, render the recipe page
+			if (username === recipe.author || username === recipe.saved_by)
+			{
+				res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+			}
+			else {
+				// otherwise, only display if recipe is published
+				if (recipe.published === true) {
+					res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+				}
+				else {
+					req.flash('errorMsg', 'Unauthorized access. This recipe is not published yet')
+					res.status(403);
+					next()
+				}
+			}
+		})
+		.catch( (error) => {
+			req.flash('errorMsg', error);
+			next(error)
+		})
+});
 
+// GET all recipe lists
+// add published: true for find condition
+router.get('/all-recipes', function(req, res, next) {
+	Recipe.find({}, function(err, recipes) {
+		if (err) {
+			res.redirect('/')
+		}
+		else {
+			res.render('./recipe/all_recipes', {user: req.user, recipes: recipes})
+		}
+	})
+});
 
 // GET recipe/external-search page
 router.get('/external-search', function(req, res, next) {
@@ -136,7 +180,7 @@ router.post('/create', function(req, res, next) {
 	newRecipe.save()
 		.then((recipe) => {
 		console.log('New recipe created: ', recipe); //debug
-		res.redirect('/recipe/'+ req.body.title)
+		res.redirect('/recipe/recipes/'+ req.body.title)
 
 	})
 	.catch((err) => {
@@ -145,18 +189,7 @@ router.post('/create', function(req, res, next) {
 	});
 });
 
-// GET all recipe lists
-// add published: true for find condition
-router.get('/all-recipes', function(req, res, next) {
-	Recipe.find({}, function(err, recipes) {
-		if (err) {
-			res.redirect('/')
-		}
-		else {
-			res.render('./recipe/all_recipes', {user: req.user, recipes: recipes})
-		}
-	})
-});
+
 
 // POST save external recipe
 router.post('/save', function(req,res, next) {
@@ -192,7 +225,7 @@ router.post('/save', function(req,res, next) {
 			savedRecipe.save()
 				.then((recipe) => {
 					console.log('Recipe copied: ', recipe); //debug
-					res.redirect('/recipe/'+ savedRecipe.title) // Creates a GET request to
+					res.redirect('/recipe/recipes/'+ savedRecipe.title) // Creates a GET request to
 
 				})
 				.catch((err) => {
@@ -213,7 +246,7 @@ router.post('/publish/:title', function(req, res, next) {
 			if (user.username === recipe.author || user.username === recipe.saved_by) {  // if user is the author/have saved this recipe
 				Recipe.findOneAndUpdate({title: req.params.title}, {published: true})
 					.then(()  => {
-						res.redirect('/recipe/'+ req.params.title)
+						res.redirect('/recipe/recipes/'+ req.params.title)
 					})
 					.catch( (error) => {
 						req.flash('errorMsg', error);
@@ -236,7 +269,7 @@ router.post('/unpublish/:title', function(req, res, next) {
 			if (user.username === recipe.author || user.username === recipe.saved_by) {  // if user is the author/have saved this recipe
 				Recipe.findOneAndUpdate({title: req.params.title}, {published: false})
 					.then(()  => {
-						res.redirect('/recipe/'+ req.params.title)
+						res.redirect('/recipe/recipes/'+ req.params.title)
 					})
 					.catch( (error) => {
 						req.flash('errorMsg', error);
@@ -326,7 +359,7 @@ router.post('/modify/:_id', function(req, res, next) {
 		{title: req.body.title, category: req.body.category, description: req.body.description, duration: duration,
 		serving: req.body.serving, ingredients: ingredients, directions: directions})
 		.then( (recipe) => {
-			res.redirect('/recipe/' + req.body.title)
+			res.redirect('/recipe/recipes/' + recipe.title)
 		})
 		.catch( (error) => {
 			req.flash('errorMsg', 'Failed to update the recipe');
@@ -342,31 +375,6 @@ router.post('/modify/:_id', function(req, res, next) {
 
 
 
-// GET recipe page. Needs to be at the very bottom else other pages below wouldn't be used
-router.get('/:title', function(req, res, next) {
-	Recipe.findOne({'title': req.params.title})
-		.then( (recipe) => {
-			// If user is either author or saver of the recipe, render the recipe page
-			if (req.user.username === recipe.author || req.user.username === recipe.saved_by)
-			{
-				res.render('./recipe/recipe', {user: req.user, recipe: recipe});
-			}
-			else {
-				// otherwise, only display if recipe is published
-				if (recipe.published === true) {
-					res.render('./recipe/recipe', {user: req.user, recipe: recipe});
-				}
-				else {
-					req.flash('errorMsg', 'Unauthorized access. This recipe is not published yet')
-					res.status(403);
-					next()
-				}
-			}
-		})
-		.catch( (error) => {
-			req.flash('errorMsg', error);
-			next(error)
-		})
-});
+
 
 module.exports = router;
