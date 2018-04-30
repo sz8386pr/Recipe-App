@@ -105,7 +105,7 @@ router.post('/rate/:recipe_id', function(req, res, next) {
 						next(error)
 					});
 				// Delete the previous rating on the recipe side. Note: it doesn't have to be the exact index that user rated as long as it finds and delete one rating that matches the previous rating
-				Recipe.findOneAndUpdate({_id: req.params.recipe_id, rating: previous_rating}, {$pull:{rating: previous_rating}})
+				Recipe.findOneAndUpdate({_id: req.params.recipe_id}, {$pop:{rating: previous_rating}})
 					.then( (recipe) => {
 						// console.log(recipe)
 					})
