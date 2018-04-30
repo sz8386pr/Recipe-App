@@ -1,6 +1,6 @@
-{{#if (equals profile_user.name user.name)}}
-    <a href="/user/modify/{{user.username}}"><button onclick="return confirm('Do you want to modify your profile?')">Modify Profile</button></a>
-{{/if}}
+{{#ifCond profile_user.username '===' user.username}}
+    <a href="/user/modify/{{profile_user.username}}"><button onclick="return confirm('Do you want to modify your profile?')">Modify Profile</button></a>
+{{/ifCond}}
 
 <h2>{{profile_user.username}}'s Profile</h2>
 
