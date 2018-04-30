@@ -37,15 +37,18 @@ Page {{page}}
     <div class="modal-content">
         <div class="modal-header">
             <span id="close-button">&times;</span>
-            <h2>Modal Header</h2>
+            <!--<h2>Modal Header</h2>-->
         </div>
         <div id="modal-body">
         </div>
         <div class="modal-footer">
+
             <form id="save-form" action="/recipe/save/" method="POST">
                 <input type="hidden" id="save_url" name="save_url">
-                <input type="submit" value="Copy">
+                <input type="submit" value="Save" onclick="return confirm('Do you want to save this recipe?')" style="float: right;">
+                Click save button to save this recipe
             </form>
+
         </div>
     </div>
 

@@ -61,6 +61,7 @@
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+    min-height: 30px;
 }
 
 #modal-body {padding: 2px;}
@@ -69,4 +70,5 @@
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+    min-height: 30px;
 }

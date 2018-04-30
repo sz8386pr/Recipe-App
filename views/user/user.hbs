@@ -2,23 +2,77 @@
     modify
 {{/if}}
 
-<h3>{{profile_user.username}}</h3>
+<h2>{{profile_user.username}}</h2>
 
 <p>Email: {{profile_user.email}}</p>
 <p>Joined on: {{profile_user.sign_up_date}}</p>
 
-<h4>Your recipes</h4>
+<h4>Created recipes</h4>
 {{#if created_recipes}}
     <ul>
-        {{#each created_recipes}}
-            <li><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
-        {{/each}}
+        <!-- if user is the profile owner, show all created recipes -->
+        {{#ifCond user.username '===' profile_user.username}}
+            {{#each created_recipes}}
+                <li><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+            {{/each}}
+        <!-- else, show only published created recipes -->
+        {{else}}
+            {{#each created_recipes}}
+                {{#ifCond this.published '===' true}}
+                    <li  class="published-created"><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+                {{/ifCond}}
+            {{/each}}
+        {{/ifCond}}
     </ul>
+    <p id="no-published-created"></p>  <!-- use js to display there are no created recipes if nothing is published -->
 {{else}}
     {{#if (equals profile_user.username user.username)}}
         <p>You don't have any recipes created yet.</p>
         <p>How about <a href="/recipe/create">create one now?</a></p>
     {{else}}
-        <p>{{profile_user.username}} doesn't have any recipes yet</p>
+        <p>{{profile_user.username}} doesn't have any recipes created yet</p>
     {{/if}}
 {{/if}}
+
+<h4>Saved recipes</h4>
+{{#if saved_recipes}}
+    <ul>
+        <!-- if user is the profile owner, show all saved recipes -->
+        {{#ifCond user.username '===' profile_user.username}}
+            {{#each saved_recipes}}
+                <li><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+            {{/each}}
+        {{else}}
+            <!-- else, show only published saved recipes -->
+            {{#each saved_recipes}}
+                {{#ifCond this.published '===' true}}
+                    <li class="published-saved"><a href="/recipe/{{this.title}}">{{this.title}}</a></li>
+                {{/ifCond}}
+            {{/each}}
+        {{/ifCond}}
+    </ul>
+    <p id="no-published-saved"></p>    <!-- use js to display there are no created recipes if nothing is published -->
+{{else}}
+    {{#if (equals profile_user.username user.username)}}
+        <p>You don't have any recipes created yet.</p>
+        <p>How about <a href="/recipe/create">create one now?</a></p>
+    {{else}}
+        <p>{{profile_user.username}} doesn't have any recipes created yet</p>
+    {{/if}}
+{{/if}}
+
+<script>
+    let published_created = document.getElementsByClassName('published-created').length;
+    let published_saved = document.getElementsByClassName('published-saved').length;
+    let no_published_created = document.getElementById('no-published-created');
+    let no_published_saved = document.getElementById('no-published-saved');
+
+    // If there are no published_created objects, display that there are no recipes created
+    if (published_created < 1) {
+        no_published_created.innerText = '{{profile_user.username}} doesn\'t have any recipes created yet'
+    }
+    // If there are no published_saved objects, display that there are no recipes saved
+    if (published_saved < 1) {
+        no_published_saved.innerText = '{{profile_user.username}} doesn\'t have any recipes saved yet'
+    }
+</script>

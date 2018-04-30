@@ -8,7 +8,10 @@
 
 <form action="/auth/signup" method="POST">
     <label for="username">Username <input type="text" name="username" required></label>
-    <label for="password">Password <input type="password" name="password" required></label>
+    <label for="password">Password <input type="password" name="password" id="password" onkeyup="check_pass()" required></label>
+    <label for="confirm_password">Confirm Password <input type="password" name="confirm_password" id="confirm_password" onkeyup="check_pass()" required> <span id="message"></span></label>
     <label for="email">Email <input type="email" name="email" required></label>
-    <input type="submit" value="Sign up">
+    <input type="submit" id='submit' value="Sign up" disabled>
 </form>
+
+<script src="/javascripts/signup.js"></script>

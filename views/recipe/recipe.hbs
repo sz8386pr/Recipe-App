@@ -14,7 +14,7 @@
 
     <!-- if published, owner/saver can unpublish it or delete it-->
     {{else}}
-        <p>This recipe is already published. Unpublish if you want to modify it/p>
+        <p>This recipe is already published. Unpublish if you want to modify it</p>
         <form id='unpublish' action="/recipe/unpublish/{{recipe.title}}" method="POST">
             <input id='unpublish-button' type="submit" value="Unpublish recipe" onclick="return confirm('Are you sure you want to UNPUBLISH this recipe?')">
         </form>

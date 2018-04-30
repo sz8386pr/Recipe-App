@@ -27,9 +27,20 @@ router.get('/:username', function(req, res, next) {
 		.then( (profile_user) => {
 			if (profile_user) {
 				// Find recipes that user has created
-				Recipe.find({'author': req.params.username}, 'title')
-					.then( (titles) => {
-						res.render('./user/user', {user: req.user, created_recipes: titles, profile_user: profile_user});
+				Recipe.find({$or: [{'author': req.params.username}, {'saved_by': req.params.username}] })
+					.then( (recipes) => {
+						// categorize into created/saved recipes
+						let created_recipes = [];
+						let saved_recipes = [];
+						recipes.forEach(function(recipe) {
+							if (recipe.source === 'local') {
+								created_recipes.push(recipe)
+							}
+							else {
+								saved_recipes.push(recipe)
+							}
+						});
+						res.render('./user/user', {user: req.user, created_recipes: recipes, saved_recipes: saved_recipes, profile_user: profile_user});
 					})
 					.catch( (error) => {
 						req.flash('errorMsg', error);

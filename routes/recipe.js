@@ -346,7 +346,22 @@ router.post('/modify/:_id', function(req, res, next) {
 router.get('/:title', function(req, res, next) {
 	Recipe.findOne({'title': req.params.title})
 		.then( (recipe) => {
-			res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+			// If user is either author or saver of the recipe, render the recipe page
+			if (req.user.username === recipe.author || req.user.username === recipe.saved_by)
+			{
+				res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+			}
+			else {
+				// otherwise, only display if recipe is published
+				if (recipe.published === true) {
+					res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+				}
+				else {
+					req.flash('errorMsg', 'Unauthorized access. This recipe is not published yet')
+					res.status(403);
+					next()
+				}
+			}
 		})
 		.catch( (error) => {
 			req.flash('errorMsg', error);
