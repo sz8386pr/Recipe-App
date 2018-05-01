@@ -84,6 +84,31 @@ router.get('/all-recipes', function(req, res, next) {
 	})
 });
 
+// GET search page
+router.get('/search', function(req, res, next) {
+	Recipe.find({}, function(err, recipes) {
+		if (err) {
+			res.redirect('/')
+		}
+		else {
+			res.render('./recipe/search', {user: req.user})
+		}
+	})
+});
+
+// POST search for recipe search
+router.post('/search', function(req, res, next) {
+	let keyword = req.body.keyword;
+	Recipe.find({title: { "$regex": keyword, "$options": "i" }},null,{ sort: {title: 1} } )
+		.then( (recipes) => {
+			res.render('./recipe/search', {user: req.user, recipes: recipes, keyword: keyword})
+		})
+		.catch( (err) => {
+			next(err)
+		})
+});
+
+
 // GET recipe/external-search page
 router.get('/external-search', function(req, res, next) {
 	res.render('./recipe/external-search', {user: req.user})

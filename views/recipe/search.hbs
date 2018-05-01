@@ -1,0 +1,31 @@
+<form action="/recipe/search/" method="POST">
+    <label for="keyword"></label><input type="search" id="keyword" name="keyword" placeholder="Search recipes with keywords" minlength="2" maxlength="100" required>
+    <input type="submit" value="Search">
+</form>
+{{#if keyword}}
+    <h4>Search result for <span class="search-header">{{toUpper keyword}}</span></h4>
+{{/if}}
+{{#if recipes}}
+
+    <h3>All recipes</h3>
+    {{#each recipes}}
+        <p><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a> by {{this.author}}</p>
+    {{/each}}
+
+    <h3>published recipes</h3>
+    {{#each recipes}}
+        {{#if this.published}}
+            <p><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a> by {{this.author}}</p>
+        {{/if}}
+    {{/each}}
+
+    <h3>unpublished recipes</h3>
+    {{#each recipes}}
+        {{#unless this.published}}
+            <p><a href="/recipe/recipes/{{this.title}}">{{this.title}}</a> by {{this.author}}</p>
+        {{/unless}}
+    {{/each}}
+{{else}}
+    There are no recipes that matches {{keyword}} keyword
+
+{{/if}}

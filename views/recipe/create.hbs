@@ -7,7 +7,7 @@
 </ul>
 
 <form action="/recipe/create" method="POST">
-    Title:          <input title="Please enter recipe title." type="text" name="title" maxlength="255" placeholder="Recipe title" required><br>
+    Title:          <input title="Please enter recipe title." type="text" name="title" minlength='2' maxlength="255" placeholder="Recipe title" required><br>
     Category:       <input title="Please enter recipe category." type="text" name="category" maxlength="255" placeholder="ie: American/Asian/Italian/Dessert..." required><br>
     Description:    <input title="Please enter recipe description." type="text" name="description" maxlength="2048" placeholder="Recipe description" required><br>
     Cooking time:   <input type="number" name="duration_hour" min=0 max=128 placeholder="hours" value=0 required> h
