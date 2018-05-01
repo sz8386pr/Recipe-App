@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var Allrecipes = require('../services/scrape_allrecipes');
-var ar_scrape = Allrecipes.scrape;
-var ar_get_recipe = Allrecipes.get_recipe;
-var Recipe = require('../models/recipe.js');
-// var flash = require('express-flash');
+const express = require('express');
+const router = express.Router();
+const Allrecipes = require('../services/scrape_allrecipes');
+const ar_scrape = Allrecipes.scrape;
+const ar_get_recipe = Allrecipes.get_recipe;
+const Recipe = require('../models/recipe.js');
+const Nutritionix = require('../services/api_nutritionix');
 
 
 function isLoggedIn(req, res, next) {
@@ -16,34 +16,10 @@ function isLoggedIn(req, res, next) {
 	}
 }
 
-
-
-
-
-
+// Middleware to check user login
 router.use(isLoggedIn);
-// router.get('/test', function(reg, res, next) {
-// 	res.redirect('/')
-// });
 
-// user need to get authenticated/logged in
-
-
-// global middleware filter reference: https://stackoverflow.com/questions/19337446/is-it-possible-to-disable-remove-a-middleware-for-specific-route-in-expressjs
-// function maybe(fn) {
-// 	return function(req, res, next) {
-// 		if (req.path === '/posts/add' && req.method === 'POST') {
-// 			next();
-// 		} else {
-// 			fn(req, res, next);
-// 		}
-// 	}
-// }
-// And then modify the app.use statement:
-//
-// 	app.use(maybe(express.bodyParser()));
-
-// GET recipe page. Needs to be at the very bottom else other pages below wouldn't be used
+// GET recipe page
 router.get('/recipes/:title', function(req, res, next) {
 	let username = req.user.username;
 	Recipe.findOne({'title': req.params.title})
@@ -107,7 +83,6 @@ router.post('/search', function(req, res, next) {
 			next(err)
 		})
 });
-
 
 // GET recipe/external-search page
 router.get('/external-search', function(req, res, next) {
@@ -392,14 +367,5 @@ router.post('/modify/:_id', function(req, res, next) {
 		})
 
 });
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

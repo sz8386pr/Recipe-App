@@ -30,7 +30,10 @@ var userSchema = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-	photo: String,
+	photo: {
+    	type: String,
+		default: '/images/default.png'
+	},
 	favorite: [String],
 	rating: [{
     	recipe_id: {

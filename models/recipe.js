@@ -26,7 +26,10 @@ var recipeSchema = mongoose.Schema({
     },
     author: String,
 	saved_by: String,
-    image: String,
+    image: {
+    	type:String,
+	    default: '/images/default.png'
+    },
     duration: {
         type: String,
 	    minlength: [1, 'Enter the time'],
@@ -67,6 +70,10 @@ var recipeSchema = mongoose.Schema({
     	type: Number,
 		min: 1,
 		max: 5
+	}],
+	nutrition: [{
+    	type:String,
+		maxlength: 5000
 	}]
 
 });
