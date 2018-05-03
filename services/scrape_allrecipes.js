@@ -27,7 +27,7 @@ function scrape(callback, url) {
 					let author = $('.submitter__name').text();  // Author name
 					let image = $('img.rec-photo').attr("src"); // Base image
 					let duration = $('.prepTime__item:nth-child(4) time').text();  // Recipe duration
-					console.log(duration)
+					// console.log(duration)
 
 					let serving = $('#servings').attr('value'); // Base serving
 
@@ -46,7 +46,7 @@ function scrape(callback, url) {
 						}
 
 					});
-					console.log(ingredients)
+					// console.log(ingredients)
 					// Recipe directions
 					let directions = [];
 					$('.recipe-directions__list--item').each(function(){
@@ -55,7 +55,7 @@ function scrape(callback, url) {
 							directions.push(direction);
 						}
 					});
-					console.log(directions)
+					// console.log(directions)
 					let recipe = {title, category, description, author, image, duration, serving,
 						ingredients, directions, 'source': 'Allrecipes.com'
 					};

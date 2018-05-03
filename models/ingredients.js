@@ -1,14 +1,13 @@
 var mongoose = require('mongoose');
-var uniqueValidator = require('mongoose-unique-validator');
 
 var ingredientsSchema = mongoose.Schema({
-    ingredient: {
+    name: {
         type: String,
-        unique: true,
         required: [true, "Can't be blank"],
         index: true
     },
     weight: Number,
+	quantity: Number,
     unit: String,
     calories: Number,
     total_fat: Number,
@@ -23,8 +22,6 @@ var ingredientsSchema = mongoose.Schema({
     measures:
         [ { unit: String, grams: Number }]
 });
-
-ingredientsSchema.plugin(uniqueValidator, {message: '{VALUE} is already listed'});
 
 Ingredient = mongoose.model('Ingredient', ingredientsSchema);
 

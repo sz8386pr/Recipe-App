@@ -39,10 +39,10 @@ function parse_json(json_data) {
 	let nutrition_facts = [];
 
     nfs.forEach(function(i) {
-	    let measures = {};
+	    let measures = [];
 	    i['alt_measures'].forEach(function(item){
 		    if (item['measure'].includes('cup') || item['measure'].includes('tsp') || item['measure'].includes('tbsp')) {
-			    measures =({'unit': item['measure'], 'grams': item['serving_weight']});
+			    measures.push({'unit': item['measure'], 'grams': item['serving_weight']});
 		    }
 	    });
 		nutrition_facts.push({
@@ -53,18 +53,19 @@ function parse_json(json_data) {
 			measures: measures
 		})
     });
+    // JSON.stringify(nutrition_facts);
     return nutrition_facts
 }
 
-// test
-get_nutrition(function(err, json){
-    if(err) {
-        console.log(err)
-    }
-    else {
-        console.log(json)
-    }
-}, '1 egg, half bacon slice');
+// // test
+// get_nutrition(function(err, json){
+//     if(err) {
+//         console.log(err)
+//     }
+//     else {
+//         console.log(json)
+//     }
+// }, '1 egg, half bacon slice');
 
 
 module.exports = get_nutrition;

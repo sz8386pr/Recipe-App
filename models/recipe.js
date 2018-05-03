@@ -1,5 +1,10 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const Ingredients = require('../models/ingredients.js');
+const Schema = mongoose.Schema;
+
+
 var uniqueValidator = require('mongoose-unique-validator');
+
 
 var recipeSchema = mongoose.Schema({
     title: {
@@ -71,11 +76,7 @@ var recipeSchema = mongoose.Schema({
 		min: 1,
 		max: 5
 	}],
-	nutrition: [{
-    	type:String,
-		maxlength: 5000
-	}]
-
+	nutrition: [{type: Schema.Types.ObjectId, ref: 'Ingredients'}]
 });
 
 recipeSchema.plugin(uniqueValidator, {message: 'Title "{VALUE}" is already in use.'});
