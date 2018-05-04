@@ -242,10 +242,10 @@
     {{/each}}
 
     // Find the previous recipe rating, and if found, display 'You have rated <previous_rating>' Message
-    let previous_rating = user_rating.find(function(o){return o["recipe_id"] === recipe_id}).rating;
-    console.log(previous_rating);
+    let previous_rating = user_rating.find(function(o){return o["recipe_id"] === recipe_id});
+    // console.log(previous_rating); // debug
     if (previous_rating) {
-    	document.getElementById('user-rating').innerText = 'You have rated ' + previous_rating;
+    	document.getElementById('user-rating').innerText = 'You have rated ' + previous_rating.rating;
     }
 
     // Nutrition facts calculation
@@ -276,20 +276,20 @@
     let fiber_percentage = fiber / daily_fiber * 100;
 
     // span objects
-    document.getElementById('total-fat').innerText = total_fat.toFixed(1) + " g";
-    document.getElementById('total-fat-percentage').innerText = total_fat_percentage.toFixed(0) + " %";
-    document.getElementById('saturated-fat').innerText = saturated_fat.toFixed(1) + " g";
-    document.getElementById('saturated-fat-percentage').innerText = saturated_fat_percentage.toFixed(0) + " %";
-    document.getElementById('cholesterol').innerText = cholesterol.toFixed(1) + " mg";
-    document.getElementById('cholesterol-percentage').innerText = cholesterol_percentage.toFixed(0) + " %";
-    document.getElementById('sodium').innerText = sodium.toFixed(1) + " mg";
-    document.getElementById('sodium-percentage').innerText = sodium_percentage.toFixed(0) + " %";
-    document.getElementById('carb').innerText = carb.toFixed(1) + " g";
-    document.getElementById('carb-percentage').innerText = carb_percentage.toFixed(0) + " %";
-    document.getElementById('fiber').innerText = fiber.toFixed(1) + " g";
-    document.getElementById('fiber-percentage').innerText = fiber_percentage.toFixed(0) + " %";
-    document.getElementById('sugar').innerText = sugar.toFixed(1) + " g";
-    document.getElementById('protein').innerText = protein.toFixed(1) + " g";
+    document.getElementById('total-fat').innerHTML = total_fat.toFixed(1) + " g";
+    document.getElementById('total-fat-percentage').innerHTML = total_fat_percentage.toFixed(0) + " %";
+    document.getElementById('saturated-fat').innerHTML = saturated_fat.toFixed(1) + " g";
+    document.getElementById('saturated-fat-percentage').innerHTML = saturated_fat_percentage.toFixed(0) + " %";
+    document.getElementById('cholesterol').innerHTML = cholesterol.toFixed(1) + " mg";
+    document.getElementById('cholesterol-percentage').innerHTML = cholesterol_percentage.toFixed(0) + " %";
+    document.getElementById('sodium').innerHTML = sodium.toFixed(1) + " mg";
+    document.getElementById('sodium-percentage').innerHTML = sodium_percentage.toFixed(0) + " %";
+    document.getElementById('carb').innerHTML = carb.toFixed(1) + " g";
+    document.getElementById('carb-percentage').innerHTML = carb_percentage.toFixed(0) + " %";
+    document.getElementById('fiber').innerHTML = fiber.toFixed(1) + " g";
+    document.getElementById('fiber-percentage').innerHTML = fiber_percentage.toFixed(0) + " %";
+    document.getElementById('sugar').innerHTML = sugar.toFixed(1) + " g";
+    document.getElementById('protein').innerHTML = protein.toFixed(1) + " g";
 
     function nutrition_facts() {
     	let label = document.getElementById('nutrition-label');
