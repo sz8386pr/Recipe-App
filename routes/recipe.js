@@ -1,9 +1,12 @@
+const recipe = require('../models/recipe.js');
+const Recipe = recipe.Recipe;
+const Ingredients = recipe.Ingredients;
 const express = require('express');
 const router = express.Router();
 const Allrecipes = require('../services/scrape_allrecipes');
 const ar_scrape = Allrecipes.scrape;
 const ar_get_recipe = Allrecipes.get_recipe;
-const Recipe = require('../models/recipe.js');
+
 const Nutritionix = require('../services/api_nutritionix');
 
 
@@ -22,17 +25,47 @@ router.use(isLoggedIn);
 // GET recipe page
 router.get('/recipes/:title', function(req, res, next) {
 	let username = req.user.username;
-	Recipe.findOne({'title': req.params.title})
-		.then( (recipe) => {
-			// If user is either author or saver of the recipe, render the recipe page
-			if (username === recipe.author || username === recipe.saved_by)
-			{
-				res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+	Recipe
+		.findOne({'title': req.params.title})
+		.populate('nutrition')
+		.exec( function(err, recipe) {
+			if (err) {
+
+				return next(err);
+			}
+
+			let calories = 0;
+			let total_fat = 0;
+			let saturated_fat = 0;
+			let cholesterol = 0;
+			let sodium = 0;
+			let carb = 0;
+			let fiber = 0;
+			let sugar = 0;
+			let protein = 0;
+
+			recipe.nutrition.forEach(function(i) {
+				calories += i.calories;
+				total_fat += i.total_fat;
+				saturated_fat += i.saturated_fat;
+				cholesterol += i.cholesterol;
+				sodium += i.sodium;
+				carb += i.carb;
+				fiber += i.fiber;
+				sugar += i.sugar;
+				protein += i.protein;
+			});
+
+			let nf = {calories, total_fat, saturated_fat, cholesterol, sodium, carb, fiber, sugar, protein};
+			console.log(nf);
+
+			if (username === recipe.author || username === recipe.saved_by) {
+					res.render('./recipe/recipe', {user: req.user, recipe: recipe, nf: nf});
 			}
 			else {
 				// otherwise, only display if recipe is published
 				if (recipe.published === true) {
-					res.render('./recipe/recipe', {user: req.user, recipe: recipe});
+					res.render('./recipe/recipe', {user: req.user, recipe: recipe, nf: nf});
 				}
 				else {
 					req.flash('errorMsg', 'Unauthorized access. This recipe is not published yet');
@@ -40,10 +73,6 @@ router.get('/recipes/:title', function(req, res, next) {
 					next()
 				}
 			}
-		})
-		.catch( (error) => {
-			req.flash('errorMsg', error);
-			next(error)
 		})
 });
 
@@ -132,6 +161,7 @@ router.post('/external-search/:site', function(req, res, next) {
 });
 
 
+
 // GET recipe create page
 // create recipe page
 router.get('/create', function(req, res, next) {
@@ -196,7 +226,7 @@ router.post('/save', function(req,res, next) {
 	let url = req.body.save_url;
 	console.log(url);
 
-	// call for web scraping function with the recipe url url
+	// call for web scraping function with the recipe url
 	ar_scrape(function(err, recipe){
 		if (err){
 			req.flash('errorMsg', err);
@@ -221,20 +251,49 @@ router.post('/save', function(req,res, next) {
 				savedRecipe.directions.push(direction)
 			});
 
-			// save the recipe and then redirect to the recipe page
-			savedRecipe.save()
-				.then((recipe) => {
-					console.log('Recipe copied: ', recipe); //debug
-					res.redirect('/recipe/recipes/'+ savedRecipe.title) // Creates a GET request to
-
-				})
-				.catch((err) => {
-					req.flash('errorMsg', 'Error saving recipe');
-					next(err);  // Forward error to the error handlers
-				});
+			// once function is over, call get_nutrition function and pass savedRecipe object to it
+			return get_nutrition(savedRecipe)
 		}
 	}, url);
 
+	// get nutrition facts and save the recipe onto the db
+	function get_nutrition(savedRecipe) {
+		Nutritionix(function (err, nutrition) {
+			if (err) {
+				next(err)
+			}
+			else {
+				// set the counter for the number of nutrition data gathered
+				let nfcounter = nutrition.length;
+
+				// for each nutrition data, save it onto the Ingredients schema and also push the id into the savedRecipe.nutrition
+				nutrition.forEach(function(n) {
+					let nf = new Ingredients(n);
+					nf.save(function(err, nf) {
+						if (err) {
+							next(err)
+						}
+						else {
+							savedRecipe.nutrition.push(nf._id);
+							nfcounter--;
+
+							// once all the nutrition facts have been added onto the schema and savedRecipe.nutrition, save savedRecipe onto Recipe schema
+							if (nfcounter === 0) {
+								savedRecipe.save()
+									.then( (recipe) => {
+										// once it's saved successfully, redirect to the recipe page
+										res.redirect('/recipe/recipes/' + recipe.title)
+									})
+									.catch( (err) => {
+										next(err)
+									})
+							}
+						}
+					});
+				});
+			}
+		}, savedRecipe.directions.join(', '));
+	}
 });
 
 

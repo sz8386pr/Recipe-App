@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
-const Ingredients = require('../models/ingredients.js');
 const Schema = mongoose.Schema;
 
 
 var uniqueValidator = require('mongoose-unique-validator');
 
 
-var recipeSchema = mongoose.Schema({
+var RecipeSchema = mongoose.Schema({
     title: {
         type: String,
 	    minlength: [1, 'Enter the title'],
@@ -79,8 +78,34 @@ var recipeSchema = mongoose.Schema({
 	nutrition: [{type: Schema.Types.ObjectId, ref: 'Ingredients'}]
 });
 
-recipeSchema.plugin(uniqueValidator, {message: 'Title "{VALUE}" is already in use.'});
+var IngredientsSchema = mongoose.Schema({
+	name: {
+		type: String,
+		required: [true, "Can't be blank"],
+		index: true
+	},
+	weight: Number,
+	quantity: Number,
+	unit: String,
+	calories: Number,
+	total_fat: Number,
+	saturated_fat: Number,
+	cholesterol: Number,
+	sodium: Number,
+	carb: Number,
+	fiber: Number,
+	sugar: Number,
+	protein: Number,
+	potassium: Number,
+	measures:
+		[ { unit: String, grams: Number }]
+});
 
-Recipe = mongoose.model('Recipe', recipeSchema);
+RecipeSchema.plugin(uniqueValidator, {message: 'Title "{VALUE}" is already in use.'});
 
-module.exports = Recipe;
+Recipe = mongoose.model('Recipe', RecipeSchema);
+Ingredients = mongoose.model('Ingredients', IngredientsSchema);
+
+module.exports = {
+	Recipe: Recipe, Ingredients: Ingredients
+};

@@ -87,6 +87,117 @@
     </ol>
 </div>
 
+<button onclick="nutrition_facts()">View nutrition facts</button>
+<!-- base reference from https://codepen.io/chriscoyier/pen/egHEK -->
+<div id="nutrition-label" hidden>
+    <section class="performance-facts">
+        <header class="performance-facts__header">
+            <h1 class="performance-facts__title">Nutrition Facts</h1>
+            <h3>{{recipe.title}}</h3>
+            <p>Servings Per Recipe {{recipe.serving}}</p>
+        </header>
+        <table class="performance-facts__table">
+            <thead>
+            <tr>
+                <th colspan="3" class="small-info">
+                    Amount Per Serving
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th colspan="3">
+                    <b>Calories</b>
+                    <span id="calories"></span>
+                </th>
+            </tr>
+            <tr class="thick-row">
+                <td colspan="3" class="small-info">
+                    <b>% Daily Value*</b>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <b>Total Fat</b>
+                    <span id="total-fat"></span>
+                </th>
+                <td>
+                    <b><span id="total-fat-percentage"></span></b>
+                </td>
+            </tr>
+            <tr>
+                <td class="blank-cell">
+                </td>
+                <th>
+                    Saturated Fat
+                    <span id="saturated-fat"></span>
+                </th>
+                <td>
+                    <b><span id="saturated-fat-percentage"></span></b>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <b>Cholesterol</b>
+                    <span id="cholesterol"></span>
+                </th>
+                <td>
+                    <b><span id="cholesterol-percentage"></span></b>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <b>Sodium</b>
+                    <span id="sodium"></span>
+                </th>
+                <td>
+                    <b><span id="sodium-percentage"></span></b>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <b>Total Carbohydrate</b>
+                    <span id="carb"></span>
+                </th>
+                <td>
+                    <b><span id="carb-percentage"></span></b>
+                </td>
+            </tr>
+            <tr>
+                <td class="blank-cell">
+                </td>
+                <th>
+                    Dietary Fiber
+                    <span id="fiber"></span>
+                </th>
+                <td>
+                    <b><span id="fiber-percentage"></span></b>
+                </td>
+            </tr>
+            <tr>
+                <td class="blank-cell">
+                </td>
+                <th>
+                    Sugars
+                    <span id="sugar"></span>
+                </th>
+                <td>
+                </td>
+            </tr>
+            <tr class="thick-end">
+                <th colspan="2">
+                    <b>Protein</b>
+                    <span id="protein"></span>
+                </th>
+                <td>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
+    </section>
+</div>
+
 
 <script>
     // set & calculate rating values
@@ -137,4 +248,58 @@
     	document.getElementById('user-rating').innerText = 'You have rated ' + previous_rating;
     }
 
+    // Nutrition facts calculation
+    // daily value for 2000 calorie diet
+    let daily_total_fat = 65;
+    let daily_saturated_fat = 25;
+    let daily_cholesterol = 300;
+    let daily_sodium = 2400;
+    let daily_carb = 300;
+    let daily_fiber = 25;
+
+    // recipe per serving
+    let total_fat = {{nf.total_fat}} / {{recipe.serving}};
+    let saturated_fat = {{nf.saturated_fat}} / {{recipe.serving}};
+    let cholesterol = {{nf.cholesterol}} / {{recipe.serving}};
+    let sodium = {{nf.sodium}} / {{recipe.serving}};
+    let carb = {{nf.carb}} / {{recipe.serving}};
+    let fiber = {{nf.fiber}} / {{recipe.serving}};
+    let sugar = {{nf.sugar}} / {{recipe.serving}};
+    let protein = {{nf.protein}} / {{recipe.serving}};
+
+    // daily percentages
+    let total_fat_percentage = total_fat / daily_total_fat * 100;
+    let saturated_fat_percentage = saturated_fat / daily_saturated_fat * 100;
+    let cholesterol_percentage = cholesterol / daily_cholesterol * 100;
+    let sodium_percentage = sodium / daily_sodium * 100;
+    let carb_percentage = carb / daily_carb * 100;
+    let fiber_percentage = fiber / daily_fiber * 100;
+
+    // span objects
+    document.getElementById('total-fat').innerText = total_fat.toFixed(1) + " g";
+    document.getElementById('total-fat-percentage').innerText = total_fat_percentage.toFixed(0) + " %";
+    document.getElementById('saturated-fat').innerText = saturated_fat.toFixed(1) + " g";
+    document.getElementById('saturated-fat-percentage').innerText = saturated_fat_percentage.toFixed(0) + " %";
+    document.getElementById('cholesterol').innerText = cholesterol.toFixed(1) + " mg";
+    document.getElementById('cholesterol-percentage').innerText = cholesterol_percentage.toFixed(0) + " %";
+    document.getElementById('sodium').innerText = sodium.toFixed(1) + " mg";
+    document.getElementById('sodium-percentage').innerText = sodium_percentage.toFixed(0) + " %";
+    document.getElementById('carb').innerText = carb.toFixed(1) + " g";
+    document.getElementById('carb-percentage').innerText = carb_percentage.toFixed(0) + " %";
+    document.getElementById('fiber').innerText = fiber.toFixed(1) + " g";
+    document.getElementById('fiber-percentage').innerText = fiber_percentage.toFixed(0) + " %";
+    document.getElementById('sugar').innerText = sugar.toFixed(1) + " g";
+    document.getElementById('protein').innerText = protein.toFixed(1) + " g";
+
+    function nutrition_facts() {
+    	let label = document.getElementById('nutrition-label');
+    	if (label.hidden === true) {
+            label.hidden = false
+        }
+        else {
+            label.hidden = true
+        }
+    }
+
 </script>
+<link rel="stylesheet" href="/stylesheets/nutrition_facts.css" type="text/css">

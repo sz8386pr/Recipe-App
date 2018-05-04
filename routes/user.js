@@ -1,7 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var Recipe = require('../models/recipe.js');
-var User = require('../models/user.js');
+const express = require('express');
+const router = express.Router();
+const recipe = require('../models/recipe.js');
+const Recipe = recipe.Recipe
+const User = require('../models/user.js');
 
 
 

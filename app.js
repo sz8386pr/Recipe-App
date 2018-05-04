@@ -64,6 +64,9 @@ hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
 			return options.inverse(this);
 	}
 });
+hbs.registerHelper('toFixed', function(value, decimal) {
+	return value.toFixed(decimal)
+});
 
 
 

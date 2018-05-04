@@ -47,13 +47,13 @@ function parse_json(json_data) {
 	    });
 		nutrition_facts.push({
 			name: i['food_name'], weight: i['serving_weight_grams'], quantity: i['serving_qty'], unit: i['serving_unit'],
-			calories: i['calories'], total_fat: i['nf_total_fat'], saturated_fat: i['nf_saturated_fat'],
+			calories: i['nf_calories'], total_fat: i['nf_total_fat'], saturated_fat: i['nf_saturated_fat'],
 			cholesterol: i['nf_cholesterol'], sodium: i['nf_sodium'], carb: i['nf_total_carbohydrate'],
 			fiber: i['nf_dietary_fiber'], sugar: i['nf_sugars'], protein: i['nf_protein'], potassium: i['nf_potassium'],
 			measures: measures
 		})
     });
-    // JSON.stringify(nutrition_facts);
+    console.log(nutrition_facts);
     return nutrition_facts
 }
 
