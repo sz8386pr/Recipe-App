@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Comment = require('../models/comment.js');
+
 
 
 var uniqueValidator = require('mongoose-unique-validator');
@@ -74,7 +76,9 @@ var RecipeSchema = mongoose.Schema({
 		min: 1,
 		max: 5
 	}],
-	nutrition: [{type: Schema.Types.ObjectId, ref: 'Ingredients'}]
+	nutrition: [{type: Schema.Types.ObjectId, ref: 'Ingredients'}],
+	comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
+
 });
 
 var IngredientsSchema = mongoose.Schema({

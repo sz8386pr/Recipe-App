@@ -1,6 +1,7 @@
 const recipe = require('../models/recipe.js');
 const Recipe = recipe.Recipe;
 const Ingredients = recipe.Ingredients;
+const Comment = require('../models/comment.js');
 const express = require('express');
 const router = express.Router();
 const Allrecipes = require('../services/scrape_allrecipes');
@@ -29,7 +30,7 @@ router.get('/recipes/:title', function(req, res, next) {
 	// Get recipe with the title and populate nutrition field
 	Recipe
 		.findOne({'title': req.params.title})
-		.populate('nutrition')
+		.populate('nutrition comments')
 		.exec( function(err, recipe) {
 			if (err) {
 				return next(err);
@@ -380,6 +381,24 @@ router.post('/unpublish/:title', function(req, res, next) {
 				next()
 			}
 		})
+});
+
+// POST comment
+router.post('/recipes/:title/comment', function(req, res, next) {
+	let newComment = Comment({username: req.body.comment_username, comment: req.body.comment});
+	newComment.save()
+		.then( (comment) => {
+			Recipe.findOneAndUpdate({title: req.params.title}, {$push: {comments: comment._id}}, { upsert: true, sort: {_id: 1} })
+				.then( (recipe) => {
+					res.redirect('/recipe/recipes/' + recipe.title)
+				})
+				.catch( (err) => {
+					next(err)
+				})
+		})
+		.catch( (err) => {
+			next(err)
+		});
 });
 
 // GET recipe modify page

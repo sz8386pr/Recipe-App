@@ -215,6 +215,29 @@
     </section>
 </div>
 
+<div id="comments-div" style="padding-top: 20px">
+    <H3>Comments</H3>
+    {{#if recipe.comments}}
+        <table>
+            {{#each recipe.comments}}
+                <tr>
+                    <td>{{this.username}}</td>
+                    <td>{{this.comment}}</td>
+                </tr>
+            {{/each}}
+        </table>
+    {{else}}
+        <p>There are no comments for this recipe yet. Leave the first comment for this recipe!</p>
+    {{/if}}
+
+    <div id="comment-form-div" style="padding-top: 10px">
+        <form action="/recipe/recipes/{{recipe.title}}/comment/" method="POST" id="comment-form">
+            <input type="hidden" name="comment_username" value="{{user.username}}">
+            <textarea name='comment' minlength="1" maxlength="500" placeholder="Share a comment for this recipe" required style="max-width: 100%;" cols="50" rows="10" style="max-width: 100%"  form="comment-form"></textarea>
+            <input type="submit" value="Post Comment">
+        </form>
+    </div>
+</div>
 
 <script>
     /********************* rating ********************************************/
