@@ -15,19 +15,19 @@
     Serving Size:   <input title="Value must be greater than or equal to 1." type="number" name="serving" min=1 max=255 placeholder="Number of servings" value={{recipe.serving}} required><br>
     Ingredients:    {{#each recipe.ingredients}}
                         {{#if @first}}
-                            <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
+                            <input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value='{{this}}' required>
                             <button id="add-ingredient">+</button><br><span id="additional-ingredient">
                         {{else}}
-                            <span><input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value={{this}} required>
+                            <span><input title="Please enter ingredient." type="text" name="ingredients" maxlength="255" placeholder="ie: minced garlic" value='{{this}}' required>
                             <button class="minus-ingredient">-</button><br></span>
                         {{/if}}
                     {{/each}}</span>
     Directions:     {{#each recipe.directions}}
                         {{#if @first}}
-                            <input title="Please enter recipe direction." type="text" name="directions" maxlength="8192" placeholder="ie: Preheat oven to 350F" value={{this}} required>
+                            <input title="Please enter recipe direction." type="text" name="directions" maxlength="8192" placeholder="ie: Preheat oven to 350F" value='{{this}}' required>
                             <button id="add-directions">+</button><br><span id="additional-directions">
                         {{else}}
-                            <span><input title="Please enter recipe direction." type="text" name="directions" maxlength="255" placeholder="ie: Preheat oven to 350F" value={{this}} required>
+                            <span><input title="Please enter recipe direction." type="text" name="directions" maxlength="255" placeholder="ie: Preheat oven to 350F" value='{{this}}' required>
                             <button class="minus-directions">-</button><br></span>
                         {{/if}}
                     {{/each}}</span>

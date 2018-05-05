@@ -3,6 +3,7 @@ var request = require('request');
 
 function get_nutrition(callback, ingredient) {
 
+	console.log(ingredient);
     process.nextTick(function(){
 
         request.post({

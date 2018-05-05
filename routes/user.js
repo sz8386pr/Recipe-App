@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const recipe = require('../models/recipe.js');
-const Recipe = recipe.Recipe
+const Recipe = recipe.Recipe;
 const User = require('../models/user.js');
 
 
@@ -225,12 +225,19 @@ router.get('/users/:username', function(req, res, next) {
 									.then( (recipes) => {
 
 										// Find the title of the recipe with the matching id from the user's rating data and pair it with the rating
-										profile_user.rating.forEach(function(r){
-											let title = recipes.find(function(e) {return e._id == r.recipe_id}).title;
-											let rating = r.rating;
-											rated_recipes.push({title, rating})
-										});
-										// console.log(rated_recipes); //debug
+										if (recipes) {
+											profile_user.rating.forEach(function(r){
+												let recipe = recipes.find(function(e) {return e._id == r.recipe_id});
+												// if recipe is found with the recipe id, find the recipe title and the rating
+												if (recipe) {
+													let title = recipe.title;
+													let rating = r.rating;
+													rated_recipes.push({title, rating})
+												}
+											});
+											// console.log(rated_recipes); //debug
+										}
+
 
 										// render profile page with the favorite_recipes and rated_recipes as well
 										res.render('./user/user', {user: req.user, created_recipes: created_recipes, saved_recipes: saved_recipes, profile_user: profile_user, favorite_recipes: favorite_recipes, rated_recipes: rated_recipes})

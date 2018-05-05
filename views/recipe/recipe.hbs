@@ -20,6 +20,13 @@
         </form>
     {{/if}}
 
+    <!-- delete button -->
+    <form id='publish' action="/recipe/delete/{{recipe._id}}" method="POST">
+        <input id='delete-button' type="submit" value="Delete recipe" onclick="return confirm('Are you sure you want to DELETE this recipe?')" style="background-color: red; color: orange;">
+    </form>
+
+
+
 {{/ifCond}}
 
 <!-- Recipe failure messages-->
@@ -70,13 +77,23 @@
 
     <p>Description: {{recipe.description}}</p>
     <p>Cooking Time: {{recipe.duration}}</p>
-    <p>Servings: {{recipe.serving}}</p>
 
+    <div id="serving-adjust-div">
+        <input type="number" value='{{recipe.serving}}' id="adjust-serving" min="1" max="100" required title="Default serving is {{recipe.serving}}">
+        <select id='type' name="type" title="Pick a display type" required>
+            <option value="default" selected>Default (cup)</option>
+            <option value="metric">Metric (g)</option>
+            <option value="imperial">Imperial (oz)</option>
+        </select>
+        <button id="adjust-serving-button" onclick="get_new_serving()">Adjust serving</button>
+    </div>
+
+    <p>Servings: <span id="serving">{{recipe.serving}}</span></p>
+
+    <br>
+    <br>
     Ingredients:
-    <ul>
-        {{#each recipe.ingredients}}
-            <li>{{this}}</li>
-        {{/each}}
+    <ul id="ingredients-list">
     </ul>
 
     Directions:
@@ -112,7 +129,7 @@
                 </th>
             </tr>
             <tr class="thick-row">
-                <td colspan="3" class="small-info">
+                <td colspan="3" class="small-info" id="daily-value">
                     <b>% Daily Value*</b>
                 </td>
             </tr>
@@ -200,6 +217,7 @@
 
 
 <script>
+    /********************* rating ********************************************/
     // set & calculate rating values
     let rating = [{{recipe.rating}}];
     let rating_length = rating.length;
@@ -219,9 +237,25 @@
         document.getElementById('rating-display').value = rating;
     }
 
+    // find user rating data
+    let user_rating = [];
+        {{#each user.rating}}
+        user_rating.push({'recipe_id':'{{this.recipe_id}}', 'rating': '{{this.rating}}'});
+        {{/each}}
+
+    let recipe_id = '{{recipe._id}}';
+    // Find the previous recipe rating, and if found, display 'You have rated <previous_rating>' Message
+    let previous_rating = user_rating.find(function(o){return o["recipe_id"] === recipe_id});
+    // console.log(previous_rating); // debug
+    if (previous_rating) {
+        document.getElementById('user-rating').innerText = 'You have rated ' + previous_rating.rating;
+    }
+
+    /********************* favorites ********************************************/
+
     // If user already have favorited this recipe, direct to unfavorite button, else if user hasn't favorited it, direct to favorite button
     let favorites = '{{user.favorite}}';
-    let recipe_id = '{{recipe._id}}';
+
     if (favorites.includes(recipe_id)) {
     	document.getElementById('favorite').value = 'unfavorite';
         document.getElementById('favorite-button').value = 'unfavorite';
@@ -235,21 +269,11 @@
         document.getElementById('favorite-button').disabled = false;
     }
 
-    // find user rating data
-    let user_rating = [];
-    {{#each user.rating}}
-        user_rating.push({'recipe_id':'{{this.recipe_id}}', 'rating': '{{this.rating}}'});
-    {{/each}}
 
-    // Find the previous recipe rating, and if found, display 'You have rated <previous_rating>' Message
-    let previous_rating = user_rating.find(function(o){return o["recipe_id"] === recipe_id});
-    // console.log(previous_rating); // debug
-    if (previous_rating) {
-    	document.getElementById('user-rating').innerText = 'You have rated ' + previous_rating.rating;
-    }
+    /********************* Nutrition facts label ********************************************/
 
     // Nutrition facts calculation
-    // daily value for 2000 calorie diet
+    // daily suggested value for 2000 calorie diet
     let daily_total_fat = 65;
     let daily_saturated_fat = 25;
     let daily_cholesterol = 300;
@@ -258,6 +282,7 @@
     let daily_fiber = 25;
 
     // recipe per serving
+    let calories = {{nf.calories}} / {{recipe.serving}};
     let total_fat = {{nf.total_fat}} / {{recipe.serving}};
     let saturated_fat = {{nf.saturated_fat}} / {{recipe.serving}};
     let cholesterol = {{nf.cholesterol}} / {{recipe.serving}};
@@ -276,6 +301,7 @@
     let fiber_percentage = fiber / daily_fiber * 100;
 
     // span objects
+    document.getElementById('calories').innerHTML = calories.toFixed(1);
     document.getElementById('total-fat').innerHTML = total_fat.toFixed(1) + " g";
     document.getElementById('total-fat-percentage').innerHTML = total_fat_percentage.toFixed(0) + " %";
     document.getElementById('saturated-fat').innerHTML = saturated_fat.toFixed(1) + " g";
@@ -291,6 +317,7 @@
     document.getElementById('sugar').innerHTML = sugar.toFixed(1) + " g";
     document.getElementById('protein').innerHTML = protein.toFixed(1) + " g";
 
+    // nutrition facts label on/off
     function nutrition_facts() {
     	let label = document.getElementById('nutrition-label');
     	if (label.hidden === true) {
@@ -301,5 +328,47 @@
         }
     }
 
+
+    /********************* Ingredients ********************************************/
+
+    // make a list of dictionary objects
+    let ingredients = [];
+    {{#each alt_ingredients}}
+        ingredients.push({ 'quantity':'{{this.qty}}', 'unit': '{{this.unit}}', 'weight': '{{this.weight}}', 'name': '{{this.name}}' });
+    {{/each}}
+
+    // get the new serving and display type value and call display_ingredients() passing those values
+    function get_new_serving() {
+        let new_serving = document.getElementById('adjust-serving').value;
+        document.getElementById('serving').innerText = new_serving;
+        let type_value = document.getElementById('type').value;
+        return display_ingredients(new_serving / {{recipe.serving}}, type_value );
+    }
+
+    // display ingredients
+    function display_ingredients(ingredients_ratio, type) {
+        document.getElementById('ingredients-list').innerHTML = ""; // clear ingredients list
+        // for the length of ingredients list, create <li>
+    	ingredients.forEach(function (i) {
+            let ingredient_row = document.createElement('li');
+            // and depends on the type of display selected, display accordingly
+            if (type === 'default') {
+                ingredient_row.innerHTML = (i.quantity * ingredients_ratio).toFixed(1) + ' ' + i.unit + ' ' + i.name;
+            }
+            else if (type === 'metric'){
+                ingredient_row.innerHTML = (i.weight * ingredients_ratio).toFixed(1) + ' g ' + i.name;  // weight in grams
+            }
+            else if (type === 'imperial'){
+                ingredient_row.innerHTML = (i.weight * ingredients_ratio / 28.3495).toFixed(1) + ' oz ' + i.name;   // weight in grams calculated to oz
+            }
+            // and append the row to the ingredients-list UL parent node
+            document.getElementById('ingredients-list').appendChild(ingredient_row.cloneNode(true));
+        });
+    }
+
+    // display the default/initial ingredients list
+    display_ingredients(1, 'default');
+
 </script>
+<!--  for nutrition facts display -->
 <link rel="stylesheet" href="/stylesheets/nutrition_facts.css" type="text/css">

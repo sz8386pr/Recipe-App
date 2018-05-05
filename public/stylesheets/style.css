@@ -42,6 +42,7 @@ a {
     body * {
         visibility: hidden;
     }
+
     #recipe-area, #recipe-area * {
         visibility: visible;
     }
@@ -54,5 +55,7 @@ a {
     #print-header {
         display: block;
     }
+
+
 
 }
