@@ -4,10 +4,44 @@ const recipe = require('../models/recipe.js');
 const Recipe = recipe.Recipe;
 const User = require('../models/user.js');
 
+// AWS settings
+var AWS = require('aws-sdk');
+var	multer = require('multer');
+var	multerS3 = require('multer-s3');
+var path = require('path');
 
+var s3 = new AWS.S3();
 
+// upload media files using multer & multer-s3
+var upload = multer({
+	storage: multerS3({
+		s3: s3,
+		bucket: process.env.S3_BUCKET_NAME,
+		key: function (req, file, cb) {
+			let filename = req.user.username + '/' + file.originalname;
+			// console.log(filename);
+			cb(null, filename)
+		}
+	}),
+	// validation reference: https://github.com/expressjs/multer/issues/114
+	// TODO redirect to user profile page instead of just showing error message
+	fileFilter: function (req, file, callback) {
+		var ext = path.extname(file.originalname);
+		console.log(ext)
+		if(ext === '.png' || ext === '.jpg' || ext === '.gif' || ext === '.jpeg') {
+			callback(null, true)
+		}
+		else{
+			callback(null, false, req.flash('errorMsg', 'Image files only!'))
+		}
 
+	},
+	limits:{
+		fileSize: 1024 * 1024
+	}
+}   );
 
+// checking authentication
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated()) {
 		next();
@@ -17,6 +51,7 @@ function isLoggedIn(req, res, next) {
 	}
 }
 
+// use for all router after this one
 router.use(isLoggedIn);
 
 // POST favorite
@@ -164,11 +199,12 @@ router.get('/modify/:username', function(req, res, next) {
 });
 
 // POST profile modify page
-router.post('/modify/:username', function(req, res, next) {
+router.post('/modify/:username', upload.array('photo',1), function(req, res, next) {
 	// Check if the user is the owner of the modify page
 	if (req.user.username === req.params.username) {
-		User.findOneAndUpdate({username: req.params.username}, {message: req.body.message, email: req.body.email, photo: req.body.photo})
-			.then ( () => {
+		User.findOneAndUpdate({username: req.params.username}, {message: req.body.message, email: req.body.email, photo: req.body.filename})
+			.then ( (user) => {
+				console.log(user.photo)
 				res.redirect('/user/users/' + req.user.username)
 			})
 			.catch( (error) => {
@@ -196,6 +232,23 @@ router.get('/users/:username', function(req, res, next) {
 	User.findOne({username: req.params.username})
 		.then( (profile_user) =>{
 
+			// if
+			if (profile_user.photo) {
+				let key = profile_user.username + '/' + profile_user.photo;
+				console.log(key)
+				let urlParams = {Bucket: process.env.S3_BUCKET_NAME, Key: key};
+				s3.getSignedUrl('getObject', urlParams, function(err, url){
+					if (!err) {
+						console.log('the url of the image is', url);
+						image = url
+					}
+				});
+			}
+			else {
+				image = '/images/default.png'
+			}
+
+
 			// Find recipes that user has created/saved and push onto the appropriate list
 			Recipe.find({$or: [{'author': req.params.username}, {'saved_by': req.params.username}] })
 				.then( (recipes) => {
@@ -210,7 +263,8 @@ router.get('/users/:username', function(req, res, next) {
 
 					// If user is not the profile owner, display without favorite/rated recipes
 					if (req.user.username !== profile_user.username) {
-						res.render('./user/user', {user: req.user, created_recipes: created_recipes, saved_recipes: saved_recipes, profile_user: profile_user});
+						res.render('./user/user', {user: req.user, created_recipes: created_recipes,
+							saved_recipes: saved_recipes, profile_user: profile_user, image: image});
 					}
 					// If user is the profile owner, get favorite/rated recipes and display them as well
 					else {
@@ -240,7 +294,9 @@ router.get('/users/:username', function(req, res, next) {
 
 
 										// render profile page with the favorite_recipes and rated_recipes as well
-										res.render('./user/user', {user: req.user, created_recipes: created_recipes, saved_recipes: saved_recipes, profile_user: profile_user, favorite_recipes: favorite_recipes, rated_recipes: rated_recipes})
+										res.render('./user/user', {user: req.user, created_recipes: created_recipes,
+											saved_recipes: saved_recipes, profile_user: profile_user,
+											favorite_recipes: favorite_recipes, rated_recipes: rated_recipes, image: image})
 									})
 									.catch( (error) => {
 										req.flash('errorMsg', error);

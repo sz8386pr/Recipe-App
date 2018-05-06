@@ -32,7 +32,7 @@ var userSchema = mongoose.Schema({
     },
 	photo: {
     	type: String,
-		default: '/images/default.png'
+		// default: '/images/default.png'
 	},
 	favorite: [String],
 	rating: [{

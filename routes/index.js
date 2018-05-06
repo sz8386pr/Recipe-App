@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var Allrecipes = require('../services/scrape_allrecipes');
-var ar_scrape = Allrecipes.scrape;
-var ar_get_recipe = Allrecipes.get_recipe;
-var recipe = require('../models/recipe.js');
+const aws = require('aws-sdk');
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
 
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated()) {
