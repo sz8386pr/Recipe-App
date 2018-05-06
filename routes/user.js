@@ -3,50 +3,32 @@ const router = express.Router();
 const recipe = require('../models/recipe.js');
 const Recipe = recipe.Recipe;
 const User = require('../models/user.js');
+
+// AWS settings
 var AWS = require('aws-sdk');
 var	multer = require('multer');
 var	multerS3 = require('multer-s3');
 var path = require('path');
 
-
-
-
-// AWS.config.update({
-// 	region: 'us-east-2',
-// 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-// 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-// });
-// AWS.config.loadFromPath('./config/creds.json');
-// console.log(AWS.config)
-
 var s3 = new AWS.S3();
-// var bucketParams = {
-// 	Bucket : process.env.S3_BUCKET_NAME
-// };
-// s3.listObjects(bucketParams, function(err, data) {
-// 	if (err) {
-// 		console.log("Error", err);
-// 	} else {
-// 		console.log("Success", data);
-// 	}
-// });
 
-
-
+// upload media files using multer & multer-s3
 var upload = multer({
 	storage: multerS3({
 		s3: s3,
 		bucket: process.env.S3_BUCKET_NAME,
 		key: function (req, file, cb) {
 			let filename = req.user.username + '/' + file.originalname;
-			console.log(filename);
+			// console.log(filename);
 			cb(null, filename)
 		}
 	}),
+	// validation reference: https://github.com/expressjs/multer/issues/114
 	// TODO redirect to user profile page instead of just showing error message
 	fileFilter: function (req, file, callback) {
 		var ext = path.extname(file.originalname);
-		if(ext === '.png' && ext === '.jpg' && ext === '.gif' && ext === '.jpeg') {
+		console.log(ext)
+		if(ext === '.png' || ext === '.jpg' || ext === '.gif' || ext === '.jpeg') {
 			callback(null, true)
 		}
 		else{
@@ -59,6 +41,7 @@ var upload = multer({
 	}
 }   );
 
+// checking authentication
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated()) {
 		next();
@@ -68,6 +51,7 @@ function isLoggedIn(req, res, next) {
 	}
 }
 
+// use for all router after this one
 router.use(isLoggedIn);
 
 // POST favorite
@@ -213,8 +197,6 @@ router.get('/modify/:username', function(req, res, next) {
 		next();
 	}
 });
-
-
 
 // POST profile modify page
 router.post('/modify/:username', upload.array('photo',1), function(req, res, next) {
