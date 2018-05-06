@@ -1,5 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
+// var bodyParser = require('body-parser');
+
+
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -18,10 +21,12 @@ var userRouter = require('./routes/user');
 
 var app = express();
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
 
 // hbs helpers
 hbs.registerHelper('toUpper', function(str) {   //toUpper will change string to uppercase
@@ -68,9 +73,6 @@ hbs.registerHelper('toFixed', function(value, decimal) {
 	return value.toFixed(decimal)
 });
 
-
-
-
 // app use setup
 app.use(logger('dev'));
 app.use(express.json());
@@ -98,13 +100,12 @@ mongoose.connect(mongo_url)
 	.then( () => { console.log('Connected to mLab'); })
 	.catch( (err) => { console.log('Error connecting to mLab', err); });
 
-
-
 // routers
 app.use('/user', userRouter);
 app.use('/recipe', recipeRouter);
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
+
 
 // catch 404 and redirect to custom 404 page
 app.use(function(req, res, next) {

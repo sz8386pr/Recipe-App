@@ -6,11 +6,30 @@
 {{/each}}
 </ul>
 
-<form action="/user/modify/{{user.username}}" method="POST">
+<img id="preview" src="/images/default.png">
+<p id="status">Please select a file</p>
+
+<form action="/user/modify/{{user.username}}" method="POST"  enctype="multipart/form-data" >
+    <input type="hidden" name="filename" id="filename">
     <label for="message">Message: </label><input type="text" name="message" id="message" value="{{user.message}}" placeholder="Message for visitors for your profile page">
     <label for="email">Email: </label><input type="email" name="email" id="email" value='{{user.email}}' required>
-    <label for="photo">Photo: </label><input type="file" name="photo" id="photo"><br>
+    <label for="photo">Photo: </label><input type="file" id="photo" name="photo" accept="image/*"><br>
     <input type="submit" id="modify" value="Modify" onclick="return confirm('Do you want to modify your profile?')">
 </form>
 
 <a href="/user/users/{{user.username}}"><button onclick="return confirm('Cancel and go back to your profile page?')">Cancel</button></a>
+
+<script>
+    document.getElementById("photo").onchange = function () {
+        let filename = document.getElementById("photo").files.item(0).name;
+        document.getElementById('filename').value = String(filename);
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            // get loaded data and render thumbnail.
+            document.getElementById("preview").src = e.target.result;
+        };
+        // read the image file as a data URL.
+        reader.readAsDataURL(this.files[0]);
+    };
+</script>

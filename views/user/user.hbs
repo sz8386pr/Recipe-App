@@ -1,8 +1,14 @@
+<ul>{{#each messages}}
+    <li>{{this}}</li>
+{{/each}}
+
 {{#ifCond profile_user.username '===' user.username}}
     <a href="/user/modify/{{profile_user.username}}"><button onclick="return confirm('Do you want to modify your profile?')">Modify Profile</button></a>
 {{/ifCond}}
 
 <h2>{{profile_user.username}}'s Profile</h2>
+
+<img id="user-portrait" src="{{image}}">
 
 {{#if profile_user.message}}
     <h5>"{{profile_user.message}}"</h5>
