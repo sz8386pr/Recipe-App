@@ -222,7 +222,8 @@ router.post('/create', function(req, res, next) {
 		let search = newRecipe.ingredients.join('\n').replace(/\(|\)/g, "");
 		Nutritionix(function (err, nutrition) {
 			if (err) {
-				next(err)
+				req.flash('errorMsg', 'Couldn\'t get nutritional information. Check the ingredients');
+				res.redirect('/recipe/create')
 			}
 			else {
 				// set the counter for the number of nutrition data gathered
@@ -470,12 +471,26 @@ router.post('/modify/:_id', function(req, res, next) {
 		directions.push(req.body.directions);
 	}
 
-	// find the recipe with the id and update it with the new values
-	Recipe.findOneAndUpdate({_id: req.params._id}, {title: req.body.title, category: req.body.category, description: req.body.description, duration: duration,
-		serving: req.body.serving, ingredients: ingredients, directions: directions})
+	// TODO: findOneAndUpdate doesn't return the updated recipe immediately for some reason. Had to set the value manually with findOne() and save() instead to get the correct result
+	// console.log(ingredients);
+	// // find the recipe with the id and update it with the new values
+	// Recipe.findOneAndUpdate({_id: req.params._id}, {"$set": {title: req.body.title, category: req.body.category, description: req.body.description, duration: duration,
+	// 	serving: req.body.serving, ingredients: ingredients, directions: directions} })
+	// 	.then( (recipe) => {
+	// 		console.log(recipe.ingredients);
+	// 		return get_nutrition(recipe)
+	// 	})
+	Recipe.findOne({_id: req.params._id})
 		.then( (recipe) => {
-			return get_nutrition(recipe)
-		})
+			recipe.title = req.body.title; recipe.category = req.body.category; recipe.description = req.body.description;
+			recipe.duration = duration;	recipe.serving = req.body.serving; recipe.ingredients = ingredients;
+			recipe.directions = directions;
+			recipe.save()
+				.then( (recipe) => {
+					// console.log(recipe.ingredients);
+					return get_nutrition(recipe)
+				})
+		} )
 		.catch( (error) => {
 				req.flash('errorMsg', 'Failed to update the recipe');
 				next(error)
@@ -485,6 +500,9 @@ router.post('/modify/:_id', function(req, res, next) {
 	function get_nutrition(savedRecipe) {
 		// search without brackets and each ingredients divided with linebreak
 		let search = savedRecipe.ingredients.join('\n').replace(/\(|\)/g, "");
+		savedRecipe.nutrition = [];  // resets/empties out nutrition list
+		// console.log(savedRecipe.ingredients);
+		// console.log(savedRecipe.nutrition);
 		Nutritionix(function (err, nutrition) {
 			if (err) {
 				next(err)
@@ -502,6 +520,7 @@ router.post('/modify/:_id', function(req, res, next) {
 						}
 						else {
 							savedRecipe.nutrition.push(nf._id);
+							// console.log(savedRecipe.nutrition)
 							nfcounter--;
 
 							// once all the nutrition facts have been added onto the schema and savedRecipe.nutrition, save savedRecipe onto Recipe schema

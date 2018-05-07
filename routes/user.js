@@ -185,25 +185,48 @@ router.post('/rate/:recipe_id', function(req, res, next) {
 
 // GET profile modify page
 router.get('/modify/:username', function(req, res, next) {
-	// Check if the user is the owner of the modify page
-	let username = req.user.username;
-	console.log(username);
-	if (username === req.params.username) {
-		res.render('./user/modify', {user: req.user})
+
+	let user = req.user;
+	// if there is an updated user image, use that value, else use the default image
+	if (user.photo) {
+		let key = user.username + '/' + user.photo;
+		let urlParams = {Bucket: process.env.S3_BUCKET_NAME, Key: key};
+		s3.getSignedUrl('getObject', urlParams, function(err, url){
+			if (!err) {
+				console.log('the url of the image is', url);
+				image = url
+			}
+		});
 	}
 	else {
-		req.flash('errorMsg', 'You don\'t have the right permission to access this page');
-		res.status(403);
-		next();
+		image = '/images/default.png'
 	}
+
+	user_authen();
+	// Check if the user is the owner of the modify page
+	function user_authen(){
+		if (user.username === req.params.username) {
+			res.render('./user/modify', {user: user, image: image})
+		}
+		else {
+			req.flash('errorMsg', 'You don\'t have the right permission to access this page');
+			res.status(403);
+			next();
+		}
+	}
+
 });
 
 // POST profile modify page
 router.post('/modify/:username', upload.array('photo',1), function(req, res, next) {
 	// Check if the user is the owner of the modify page
 	if (req.user.username === req.params.username) {
-		User.findOneAndUpdate({username: req.params.username}, {message: req.body.message, email: req.body.email, photo: req.body.filename})
+		User.findOneAndUpdate({username: req.params.username}, {message: req.body.message, email: req.body.email})
 			.then ( (user) => {
+				if (req.body.filename) {
+					user.photo = req.body.filename;
+					user.save()
+				}
 				console.log(user.photo)
 				res.redirect('/user/users/' + req.user.username)
 			})
@@ -232,7 +255,7 @@ router.get('/users/:username', function(req, res, next) {
 	User.findOne({username: req.params.username})
 		.then( (profile_user) =>{
 
-			// if
+			// if there is an updated user image, use that value, else use the default image
 			if (profile_user.photo) {
 				let key = profile_user.username + '/' + profile_user.photo;
 				console.log(key)
