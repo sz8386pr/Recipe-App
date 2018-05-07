@@ -16,3 +16,6 @@
     /recipe/search                  recipe search page
     /recipe/<recipe name>/          recipe page
     /recipe/<recipe name>/modify    recipe modify page  (Creater access)
+    
+    functional testing
+    http://mherman.org/blog/2015/09/10/testing-node-js-with-mocha-and-chai/
