@@ -1,4 +1,4 @@
-#Scott's Recipes App
+# Scott's Recipes App
 MCTC Capstone/Web Programming Final Project  
 Heroku deployment: https://scotts-recipes.herokuapp.com/
 
