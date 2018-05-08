@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const aws = require('aws-sdk');
-const S3_BUCKET = process.env.S3_BUCKET_NAME;
 
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated()) {

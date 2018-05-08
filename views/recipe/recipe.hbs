@@ -1,3 +1,4 @@
+<br>
 <!-- Owner/saver can access these menu -->
 {{#ifCond (equals recipe.author user.username) '||' (equals recipe.saved_by user.username)}}
     <!-- If not published, owner/saver can publish it -->
@@ -214,8 +215,8 @@
         <p class="small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
     </section>
 </div>
-
-<div id="comments-div" style="padding-top: 20px">
+<hr>
+<div id="comments-div">
     <H3>Comments</H3>
     {{#if recipe.comments}}
         <table>

@@ -1,8 +1,27 @@
-{{#if user}}
-    <a href="/">Main</a><p style="text-align: right">Welcome <a href="/user/users/{{user.username}}">{{user.username}}</a> <a href="/auth/logout">Logout</a></p>
+<!-- drop down navigation reference from: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_dropdown_navbar_click-->
+<div class="topnav">
+    <a href="/" title="Back to home">Home</a>
+    <a href="/recipe/external-search/" title="Search recipe from external sites">External</a>
+    <a href="/recipe/search" title="Internal recipe search">Search</a>
+    <a href="/recipe/create/" title="Create your own recipe!">Create</a>
 
-{{else}}
-    <p style="text-align: right"><a href="/auth/login">Login</a> <a href="/auth/signup">Sign up</a></p>
+    <div class="dropdown">
+        {{#if user}}
+            <button class="dropbtn" onclick="myFunction()" title="Click to check your profile or logout">{{user.username}}</button>
+            <div class="dropdown-content" id="myDropdown">
+                <a href="/user/users/{{user.username}}" title="Visit your profile page">Profile Page</a>
+                <a href="/auth/logout" title="Logout from the site">Logout</a>
+            </div>
+        {{else}}
+            <button class="dropbtn" onclick="myFunction()" title="Click to login or sign up">Login</button>
+            <div class="dropdown-content" id="myDropdown">
+                <a href="/auth/login" title="Login">Login</a>
+                <a href="/auth/signup" title="Sign up">Sign up</a>
+            </div>
+        {{/if}}
 
-{{/if}}
-<hr>
+    </div>
+
+</div>
+
+<script src="/javascripts/navigation.js"></script>

@@ -113,7 +113,7 @@ router.get('/search', function(req, res, next) {
 // POST search for recipe search
 router.post('/search', function(req, res, next) {
 	let keyword = req.body.keyword;
-	Recipe.find({title: { "$regex": keyword, "$options": "i" }},null,{ sort: {title: 1} } )
+	Recipe.find({title: { "$regex": keyword, "$options": "i" }, published: true},null,{ sort: {title: 1} } )
 		.then( (recipes) => {
 			res.render('./recipe/search', {user: req.user, recipes: recipes, keyword: keyword})
 		})

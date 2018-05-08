@@ -1,10 +1,10 @@
 /*@import "compass/css3";*/
 
-.image {
-    width: 250px;
-    float: left;
-    margin: 20px;
-}
+/*.image {*/
+    /*width: 250px;*/
+    /*float: left;*/
+    /*margin: 20px;*/
+/*}*/
 body {
     font-size: small;
     line-height: 1.4;
@@ -16,7 +16,7 @@ p {
 .performance-facts {
     border: 1px solid black;
     margin: 20px;
-    float: left;
+    /*float: left;*/
     width: 280px;
     padding: 0.5rem;
 }

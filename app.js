@@ -1,7 +1,5 @@
 var createError = require('http-errors');
 var express = require('express');
-// var bodyParser = require('body-parser');
-
 
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -20,7 +18,6 @@ var recipeRouter = require('./routes/recipe');
 var userRouter = require('./routes/user');
 
 var app = express();
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
