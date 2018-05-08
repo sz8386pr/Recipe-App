@@ -1,29 +1,42 @@
-// Mccha/Chai reference from: https://raw.githubusercontent.com/minneapolis-edu/todo_express_mongoose/master/test/todo_tests.js
-// Utility modules
+// Database setup.
 
-let _ = require('lodash');
+// Create a separate test database at mLab.
 
+// Overwrite the database URL with the test database.
+
+let db_config = require('../config/db_config');
+let test_db_url = process.env.MONGO_TEST_URL;  // Verify that this environment variable is configured on your computer
+db_config.db_url = test_db_url;
+
+const TEST_DB_NAME = 'recipe-test';   // TODO change this if your database name is different
+
+let mongodb_client = require('mongodb').MongoClient;
+const recipe = require('../models/recipe.js');
+const Recipe = recipe.Recipe;
+const Ingredients = recipe.Ingredients;
+const Comment = require('../models/comment.js');
+const User = require('../models/user.js');
 
 // Chai config
-
 let chai = require('chai');
 let chaiHTTP = require('chai-http');
 let server = require('../app');
 let expect = chai.expect;
 
+let chaiHtml = require('chai-html');
+
 chai.use(chaiHTTP);
+chai.use(chaiHtml);
+
+// Cookie server remembers cookies, needed to test flash messages. chai_server does not.
+let cookie_server = chai.request.agent(server);
+let chai_server =  chai.request(server);
 
 
-// Database setup
+// Tests!
 
-let mongodb = require('mongodb');
-let ObjectID = mongodb.ObjectID;
-
-let test_db_url = process.env.MONGO_TEST_URL;
-
-
-describe('open and empty test db before and close db after', () => {
-	let db;
+describe('empty test db before tests, and and close db after ', () => {
+	let test_db_client;
 	// collections
 	let comments;
 	let ingredients;
@@ -31,41 +44,159 @@ describe('open and empty test db before and close db after', () => {
 	let sessions;
 	let users;
 
-	beforeEach('get collections and delete all dos', function(done) {
+	before('get collections and delete all dos', function(done) {
 
-		mongodb.connect(test_db_url)
-			.then( (test_db) => {
-				db = test_db;
-				// comments = db.collection('comments');
-				// ingredients = db.collection('ingredients');
-				// recipes = db.collection(' recipes');
-				// sessions = db.collection('sessions');
-				// users = db.collection('users');
-				db.collections().forEach(function(c) {
-					if (c !== 'system.indexes') {
-						db.collection(c).drop();
-					}
-				})
+		mongodb_client.connect(test_db_url)
+			.then((client) => {
+				test_db_client = client;
+				comments = test_db_client.db(TEST_DB_NAME).collection('comments');
+				ingredients = test_db_client.db(TEST_DB_NAME).collection('ingredients');
+				recipes = test_db_client.db(TEST_DB_NAME).collection('recipes');
+				sessions = test_db_client.db(TEST_DB_NAME).collection('sessions');
+				users = test_db_client.db(TEST_DB_NAME).collection('users');
+
+				comments.deleteMany({}).then( ()=> {
+				});
+				ingredients.deleteMany({}).then( ()=> {
+				});
+				recipes.deleteMany({}).then( ()=> {
+				});
+				sessions.deleteMany({}).then( ()=> {
+				});
+				users.deleteMany({}).then( ()=> {
+					done()
+				});
 			})
 	});
 
-	afterEach('close DB connection', (done) => {
-		db.close(true)
-			.then(() => { return done() })
+	beforeEach('get collections and delete all dos', function(done) {
+
+		mongodb_client.connect(test_db_url)
+			.then((client) => {
+				test_db_client = client;
+				done()
+			});
 	});
 
-	describe('signup', function() {
+	afterEach('close DB connection', (done) => {
+		test_db_client.close(true)
+			.then(() => { done() })
+	});
+
+	describe('signup/login', function() {
+
 		it('should connect to server', function(done) {
-			chai.request(server)
+			chai_server
 				.get('/')
 				.end((err, res) => {
 					expect(res).to.have.status(200);
-					expect(res.text).to.include('recipe');
+					expect(res.text).to.include('Default index page here');
+					done()
+				})
+		});
+
+		it('should be able to create account', function(done) {
+			cookie_server
+				.post('/auth/signup/')
+				.send({username: 'testuser', password: 'testuser', confirm_password: 'testuser', email: 'testuser@email.com'})
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+
+					users.find().toArray().then( (users) => {
+						expect(users.length).to.equal(1);
+						var user = users[0];
+						expect(user).to.have.property('username').equal('testuser');
+						expect(user).to.have.property('email').equal('testuser@email.com');
+						expect(res.text).to.include('Default index page here');
+
+						done();
+					})
+				})
+
+		});
+
+		it('should be able to login', function(done) {
+			chai.request(server)
+				.post('/auth/login')
+				.send({username: 'testuser', password: 'testuser'})
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+					expect(res.text).to.include('Default index page here');
+					done();
+				})
+		})
+	});
+
+	describe('external search', function() {
+		// beforeEach('login', function(done) {
+		// 	cookie_server
+		// 		.post('/auth/login')
+		// 		.send({username: 'testuser', password: 'testuser'})
+		// 		.then((err, res) => {
+		// 			done()
+		// 		})
+		// });
+
+		it('should be able to open external search page', function(done) {
+			cookie_server
+				.get('/recipe/external-search')
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+					expect(res.text).to.include('Search recipes from other sources');
+					done();
+				})
+
+
+		});
+
+		it('should be able to search Allrecipes with keyword chicken', function(done) {
+			cookie_server
+				.post('/recipe/external-search/allrecipes')
+				.send({site: 'allrecipes', keyword: 'chicken'})
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+					expect(res.text).to.include('Search result for' || 'ALLRECIPES');
+					done()
+				})
+		});
+
+		it('should save chicken-parmasan recipe from ALLrecipes', function(done) {
+			this.timeout(5000);     // this task takes little longer than the default timeout--2000ms
+			cookie_server
+				.post('/recipe/save')
+				.send({save_url: 'https://www.allrecipes.com/recipe/223042/chicken-parmesan/'})
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+					expect(res.text).to.include('Chicken Parmesan from Allrecipes.com');
+					done()
+				})
+		})
+	});
+
+	describe('create recipe', function() {
+
+		it('should render create recipe page', function(done) {
+			cookie_server
+				.get('/recipe/create')
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+					expect(res.text).to.include('Create Recipe');
+					done()
+				})
+		});
+
+		it('should create a new recipe', function(done) {
+			cookie_server
+				.post('/recipe/create')
+				.send({title:'test recipe', category: 'test category', description: 'test desc', duration_hour: 1,
+						duration_minute: 0, serving: 5, ingredients: 'chicken', directions: 'chop chop'})
+				.end((err, res) => {
+					expect(res.status).to.equal(200);
+					expect(res.text).to.include('test recipe' && 'chop chop');
 					done()
 				})
 		})
 
+
 	});
-
-
 });

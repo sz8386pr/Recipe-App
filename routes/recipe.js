@@ -263,7 +263,7 @@ router.post('/create', function(req, res, next) {
 // POST save external recipe
 router.post('/save', function(req,res, next) {
 	let url = req.body.save_url;
-	console.log(url);
+	// console.log(url);
 
 	// call for web scraping function with the recipe url
 	ar_scrape(function(err, recipe){

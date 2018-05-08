@@ -3,7 +3,7 @@ var request = require('request');
 
 function get_nutrition(callback, ingredient) {
 
-	console.log(ingredient);
+	// console.log(ingredient);
     process.nextTick(function(){
 
         request.post({
@@ -54,7 +54,7 @@ function parse_json(json_data) {
 			measures: measures
 		})
     });
-    console.log(nutrition_facts);
+    // console.log(nutrition_facts);
     return nutrition_facts
 }
 

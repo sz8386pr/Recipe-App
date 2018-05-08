@@ -78,14 +78,19 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 
-// MongoDB & session connection setup
-var mongo_url = process.env.MONGO_URL;
+// // MongoDB & session connection setup
+// var mongo_url = process.env.MONGO_URL;
+// Read the mLab connection URL
+var config = require('./config/db_config');
+var db_url = config.db_url;
+
+
 
 app.use(session({
     secret: 'replace me with long random string',
     resave: true,
     saveUninitialized: true,
-    store: new MongoDBStore( { uri: mongo_url })
+    store: new MongoDBStore( { uri: db_url })
 }));
 
 // passport & flash
@@ -93,7 +98,7 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect(mongo_url)
+mongoose.connect(db_url)
 	.then( () => { console.log('Connected to mLab'); })
 	.catch( (err) => { console.log('Error connecting to mLab', err); });
 

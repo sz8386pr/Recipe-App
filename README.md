@@ -116,7 +116,8 @@ for testing: MONGO_TEST_URL
 
 ## Useful Links    
 Functional testing reference: 
-http://mherman.org/blog/2015/09/10/testing-node-js-with-mocha-and-chai/  
+http://mherman.org/blog/2015/09/10/testing-node-js-with-mocha-and-chai/  and  
+https://github.com/minneapolis-edu/todo_mlab_PART2/blob/master/test/test_lab_features.js  
 Nutritionix API (Nutrition info): https://www.nutritionix.com/business/api  
 Web scraping info: https://codeburst.io/an-introduction-to-web-scraping-with-node-js-1045b55c63f7  
 Modal reference: https://www.w3schools.com/howto/howto_css_modals.asp and http://jsfiddle.net/limeric29/C3LkL/  
