@@ -1,5 +1,6 @@
 #Scott's Recipes App
-MCTC Capstone/Web Programming Final Project
+MCTC Capstone/Web Programming Final Project  
+Heroku deployment: https://scotts-recipes.herokuapp.com/
 
 ## Overview
 * Create user's own recipe
@@ -10,6 +11,18 @@ MCTC Capstone/Web Programming Final Project
 * Users can browse/search published recipes and favorite the recipe / rate the recipe / leave the comment
 * User profile can be modified to upload pictures and set a personal message.
     * list of saved / rated recipes is only accessible to the profile owner  
+    
+## Installation
+Setup environment variable. Please refer to environment_variables.txt
+
+MONGO_URL  
+X_APP_ID  
+X_APP_KEY  
+S3_BUCKET_NAME  
+AWS_ACCESS_KEY_ID  
+AWS_SECRET_ACCESS_KEY  
+
+for testing: MONGO_TEST_URL
 
 ## Page Structure
   
@@ -106,7 +119,7 @@ Functional testing reference:
 http://mherman.org/blog/2015/09/10/testing-node-js-with-mocha-and-chai/  
 Nutritionix API (Nutrition info): https://www.nutritionix.com/business/api  
 Web scraping info: https://codeburst.io/an-introduction-to-web-scraping-with-node-js-1045b55c63f7  
-Modal reference: https://www.w3schools.com/howto/howto_css_modals.asp and http://jsfiddle.net/limeric29/C3LkL/
+Modal reference: https://www.w3schools.com/howto/howto_css_modals.asp and http://jsfiddle.net/limeric29/C3LkL/  
 Append line with button click: https://plainjs.com/javascript/manipulation/append-or-prepend-to-an-element-29/  
  parentNode.remove() reference: https://stackoverflow.com/questions/46665554/remove-parent-element-on-click-with-plain-javascript  
 Sakura CSS: https://github.com/oxalorg/sakura  
@@ -118,3 +131,11 @@ Slider reference: http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-
 print area reference from: https://stackoverflow.com/questions/468881/print-div-id-printarea-div-only  
 Nutrition label reference: https://codepen.io/chriscoyier/pen/egHEK   
 Handlebar ifCond reference: https://stackoverflow.com/questions/8853396/logical-operator-in-a-handlebars-js-if-conditional  
+Drop down navigation reference from: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_dropdown_navbar_click
+
+## Notes
+* I like JavaScript
+* I hate JavaScript
+* Restart WebStorm when dealing with environment variables  
+   
+![It's Over](public/images/itsover.jpg)

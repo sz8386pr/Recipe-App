@@ -55,7 +55,6 @@ describe('open and empty test db before and close db after', () => {
 	});
 
 	describe('signup', function() {
-
 		it('should connect to server', function(done) {
 			chai.request(server)
 				.get('/')
